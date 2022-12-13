@@ -1,7 +1,6 @@
 # C source https://github.com/python/cpython/blob/master/Include/listobject.h
 # dynamic array, not linked list
 # Array can only contain same type items,
-# mostly numbers as numpy array, to handle large data sets efficiently
 # list is mutable
 # using list as a queue, not efficient
 queue = [0, 1, 2, 3, 4]

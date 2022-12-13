@@ -4,7 +4,7 @@ try:
     from . import everything_object
 # above works when running python -m unittest from repo base directory
 # or python -m basics.test_everything_object
-except SystemError:
+except ImportError:
     import everything_object
 # running python test_everyting_object.py in basics dir
 # for more see stackoverflow 16981921/relative-imports-in-python-3
