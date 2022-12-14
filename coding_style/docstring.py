@@ -61,7 +61,7 @@ def my_complex(real=0.0, imag=0.0):
         return complex(0, 0)
 
 print("raw form\n ", my_complex.__doc__)
-print(my_complex.__doc__.splitlines())
+print("splitted\n", my_complex.__doc__.splitlines())
 
 
 def trim(docstring):
