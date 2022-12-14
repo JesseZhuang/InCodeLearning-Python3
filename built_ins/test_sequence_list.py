@@ -3,16 +3,21 @@
 # Array can only contain same type items,
 # list is mutable
 # using list as a queue, not efficient
+
+
+import unittest
+
 queue = [0, 1, 2, 3, 4]
 queue.append(5)
 queue.append(6)
 print(queue)
-queue.pop(0)
-print(queue)  # elements 1-6 shifted left by one O(n) time
+queue.pop(0)  # elements 1-6 shifted left by one O(n) time
+print(queue)
 
 l = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 
-print(hex(id(l)))  # 0x2564cb0  memory address (32 bit?), machine dependent.
+# 0x2564cb0  memory address (32 bit?), machine dependent. 0x7ff661c16dc0 on 64 bit
+print(hex(id(l)))
 print(len(l))  # 7
 
 # slicing, not including the second slice index
@@ -108,6 +113,39 @@ print(hex(id(l)), hex(id(l_new)), hex(id(l_new2)))
 # memory addresses are different.
 
 
-# A tuple is an immutable list. Once it is created, it can not be changed.
-# Except the method, which will change the content of the List,
-# such as insert(), extend(), remove()etc, Tuple can use the methods of List.
+def reverse_list_inplace(a_list):
+    '''reverse a list in place'''
+    a_list.reverse()
+    return a_list
+
+
+class TestSequenceList(unittest.TestCase):
+    '''python built-in list'''
+
+    def test_create_list_filled(self):
+        '''create a list filled with same value'''
+        self.assertEqual([1, 1, 1, 1, 1], [1] * 5)
+
+    def test_reverse_list_inplace(self):
+        '''passed in list is reversed'''
+        list1 = [1, 2, 3]
+        self.assertEqual([3, 2, 1], reverse_list_inplace(list1))
+        self.assertEqual([3, 2, 1], list1)
+
+    def test_reversed(self):
+        '''reversed() get a reversed iterator on the orignal copy'''
+        list1 = [1, 2, 3]
+        reversed_list1 = reversed(list1)
+        list1[-1] = 4
+        self.assertEqual(4, next(reversed_list1))
+        self.assertEqual(2, next(reversed_list1))
+
+        list2 = list(reversed_list1)
+        self.assertEqual([1], list2)
+
+        list3 = list(reversed(list1))
+        self.assertEqual([4, 2, 1], list3)
+
+
+if __name__ == '__main__':
+    unittest.main()
