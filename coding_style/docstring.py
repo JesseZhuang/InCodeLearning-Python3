@@ -50,7 +50,7 @@ def empty_function():
 
 
 # A real recommended example.
-def complex(real=0.0, imag=0.0):
+def my_complex(real=0.0, imag=0.0):
     """Form a complex number.
 
     Keyword arguments:
@@ -58,10 +58,10 @@ def complex(real=0.0, imag=0.0):
     imag -- the imaginary part (default 0.0)
     """
     if imag == 0.0 and real == 0.0:
-        return complex_zero
+        return complex(0, 0)
 
-print("raw form\n ", complex.__doc__)
-print(complex.__doc__.splitlines())
+print("raw form\n ", my_complex.__doc__)
+print(my_complex.__doc__.splitlines())
 
 
 def trim(docstring):
@@ -90,4 +90,4 @@ def trim(docstring):
     # Return a single string:
     return '\n'.join(trimmed)
 
-print("processed\n ", trim(complex.__doc__))
+print("processed\n ", trim(my_complex.__doc__))
