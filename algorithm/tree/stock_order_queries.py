@@ -1,5 +1,6 @@
 '''stock oder queries'''
 
+from bisect import bisect_right
 from dataclasses import dataclass
 
 
@@ -29,4 +30,23 @@ class StockOrder:
             for i, query in enumerate(queries):
                 if query < order.cancelled_or_executed_at and query >= order.created_at:
                     result[i] += order.shares
+        return result
+
+    @classmethod
+    def num_shares_queries_bs(cls, orders: list['StockOrder'], queries: list[int]) -> list[int]:
+        '''
+        binary search, O((M+N)LgN) time, O(M) space. continuous memory access
+        alternatively, binary search queries, O((M+N)LgM) time. random memory access
+        '''
+        result = [0] * len(queries)
+        orders_sortby_create = sorted(orders, key=lambda order: order.created_at)  # O(NlgN)
+        for i, query in enumerate(queries):  # (MLgN) time
+            filter_start = bisect_right(orders_sortby_create, query, key=lambda order: order.created_at)
+            # assume size K (K <= N) after filtering, O(KLgK) time
+            orders_sortby_end = sorted(orders_sortby_create[:filter_start],
+                                       key=lambda order: order.cancelled_or_executed_at)
+            filter_end = bisect_right(orders_sortby_end, query, key=lambda order: order.cancelled_or_executed_at)
+            orders = orders_sortby_end[filter_end:]
+            for order in orders:
+                result[i] += order.shares
         return result

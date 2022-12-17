@@ -26,3 +26,8 @@ class StockOrderTest(unittest.TestCase):
         '''test brute forece method'''
         result = StockOrder.num_shares_queries_bf(self.orders, self.queries)
         self.assertEqual([40, 50], result)  # [0,3] orders for 3 query, [2,6] for the 6 query
+
+    def test_bs(self):
+        '''test binary search'''
+        result = StockOrder.num_shares_queries_bs(self.orders, self.queries)
+        self.assertEqual([40, 50], result)
