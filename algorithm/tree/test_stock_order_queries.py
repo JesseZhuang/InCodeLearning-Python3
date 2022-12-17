@@ -1,9 +1,11 @@
 '''unit test stock order queries'''
 import unittest
 
+# use vs code python test explorer plugin
 from algorithm.tree.stock_order_queries import StockOrder
 
 # pylint: disable=invalid-name
+
 
 class StockOrderTest(unittest.TestCase):
     '''unit test the class'''
@@ -23,8 +25,4 @@ class StockOrderTest(unittest.TestCase):
     def test_bf(self):
         '''test brute forece method'''
         result = StockOrder.num_shares_queries_bf(self.orders, self.queries)
-        self.assertEqual([40, 50], result) # [0,3] orders for 3 query, [2,6] for the 6 query
-
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual([40, 50], result)  # [0,3] orders for 3 query, [2,6] for the 6 query
