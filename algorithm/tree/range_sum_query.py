@@ -9,7 +9,7 @@ Implement the NumArray class:
 
 NumArray(int[] nums) Initializes the object with the integer array nums.
 void update(int index, int val) Updates the value of nums[index] to be val.
-int sumRange(int left, int right) Returns the sum of the elements of nums between indices 
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices
 left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
 
 Example 1:
@@ -25,7 +25,7 @@ NumArray numArray = new NumArray([1, 3, 5]);
 numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9
 numArray.update(1, 2);   // nums = [1, 2, 5]
 numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8
- 
+
 Constraints:
 
 1 <= nums.length <= 3 * 104
@@ -37,6 +37,9 @@ At most 3 * 104 calls will be made to update and sumRange.
 '''
 
 # pylint: disable=invalid-name
+
+from typing import Optional
+
 
 class Node:
     '''
@@ -51,18 +54,16 @@ class Node:
         self.start = start
         self.end = end
         self.total = 0
-        self.left = None
-        self.right = None
+        self.left: Optional[Node] = None
+        self.right: Optional[Node] = None
 
 
 class NumArray:
     '''leetcode 307'''
 
     def __init__(self, nums: list[int]):
-        def createTree(nums: list[int], l: int, r: int):
+        def createTree(nums: list[int], l: int, r: int) -> Node:
             '''helper function to create the tree from input array'''
-            if l > r:  # base case
-                return None
             if l == r:  # leaf node
                 n = Node(l, r)
                 n.total = nums[l]
