@@ -2,6 +2,7 @@
 
 
 import functools
+# pylint: disable=invalid-name
 
 
 def longestCommonSubsequenceDP(self, text1: str, text2: str) -> int:
