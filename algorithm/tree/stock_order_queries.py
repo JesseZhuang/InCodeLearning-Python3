@@ -37,6 +37,7 @@ class StockOrder:
         '''
         binary search, O((M+N)LgN) time, O(M) space. continuous memory access
         alternatively, binary search queries, O((M+N)LgM) time. random memory access
+        note bisect functions key argument was added since 3.10
         '''
         result = [0] * len(queries)
         orders_sortby_create = sorted(orders, key=lambda order: order.created_at)  # O(NlgN)
