@@ -33,10 +33,10 @@ def first_missing_positive_set(nums: list[int]) -> int:
 def solution(nums):
     '''swap in place, O(n) time, O(1) space (modifying input). 993 ms, 27.2 Mb.'''
     for i, num in enumerate(nums):
+        def swap(nums, i, j):
+            nums[i], nums[j] = nums[j], nums[i]
         while 0 < nums[i] <= len(nums) and nums[nums[i]-1] != nums[i]:
-            temp = nums[nums[i]-1]
-            nums[nums[i]-1] = num[i]
-            nums[i] = temp
+            swap(nums, i, nums[i]-1)
             # nums[i], nums[nums[i]-1] = nums[nums[i]-1], nums[i] not swapping: bug
     for i, num in enumerate(nums):
         if num != i+1:
