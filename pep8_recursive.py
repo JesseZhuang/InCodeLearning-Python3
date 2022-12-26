@@ -11,6 +11,7 @@ class PythonStyleChecker(object):
     Base class for python style checker.
     Implemented pep8. My include pylint later.
     """
+
     def __init__(self, checker_name):
         self.passed = 0
         self.failed = 0
@@ -50,6 +51,7 @@ def _get_starting_directory(args):
     except IndexError:
         base_directory = os.getcwd()
     return base_directory
+
 
 base_directory = _get_starting_directory(sys.argv)
 logging.basicConfig(level=logging.INFO)

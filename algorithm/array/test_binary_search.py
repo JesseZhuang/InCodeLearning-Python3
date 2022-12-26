@@ -1,6 +1,6 @@
 '''binary search in python'''
 import unittest
-from bisect import bisect_left, bisect_right
+from bisect import bisect_left, bisect_right, insort_left
 
 
 class TestBinarySearch(unittest.TestCase):
@@ -34,6 +34,16 @@ class TestBinarySearch(unittest.TestCase):
     def test_bisect_right_existing_duplicate(self):
         '''1 in list, should insert at index 4, right of all existing 1'''
         self.assertEqual(4, bisect_right([0, 1, 1, 1], 1))
+
+    def test_bisect_insort_left(self):
+        '''biset left and then insert to keep sorted'''
+        list1 = [1]
+        list2 = [1]
+        list3 = [[0], list1, [2]]
+        insort_left(list3, list2, key=lambda l: l[0])
+        self.assertEqual([[0], [1], [1], [2]], list3)
+        self.assertTrue(list3[1] is list2)
+        self.assertTrue(list3[2] is list1)
 
 
 if __name__ == '__main__':
