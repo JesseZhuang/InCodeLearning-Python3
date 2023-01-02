@@ -22,11 +22,9 @@ def method2(d, k, v):
 
 x = [1, 2, 3]
 
-print("reverse1", x.reverse())
-
-print(x[::-1])
-
-print(sorted(x, reverse=True))
+print("reverse1", x.copy().reverse())  # reverse in place
+print(x.copy()[::-1])
+print(sorted(x.copy(), reverse=True))
 
 
 d = {'a': 'a1'}
@@ -34,9 +32,12 @@ d = {'a': 'a1'}
 t = dict()
 t.update(d)
 
-
 t['secret'] = 'a1b2'
+print(t)
+print(d)
 
+t = d
+t['secret'] = 'a1b2'
 print(t)
 print(d)
 
