@@ -1,5 +1,7 @@
 '''old mission OA'''
 
+# pylint: disable-all
+
 import math
 import math  # safe to re-import, use cache
 import subprocess

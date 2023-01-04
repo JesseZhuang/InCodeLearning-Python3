@@ -11,16 +11,8 @@ import unittest
 
 l = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 
-# 0x2564cb0  memory address (32 bit?), machine dependent. 0x7ff661c16dc0 on 64 bit
+# 0x256_4cb0  memory address (32 bit?), machine dependent. saw 0x7ff6_61c1_6dc0 and 0x1_05c3_8180 on 64 bit
 print(hex(id(l)))
-
-# slicing, not including the second slice index
-print(l[:5])  # [True, 2, 3.5, 5-8j, [9, 7, 5]],
-
-# list index
-print(l[0])  # True
-print(l[-7])  # True    list[-n] == list[len(list) - n]
-# print(l[-8]) Error, index out of range, not intuitive
 
 print(l[4:-1])  # [[9, 7, 5], 'python'], combination of pos & neg index
 print(l[4:-6])  # [], if 2nd slice index on the left of 1st one
@@ -105,16 +97,37 @@ def reverse_list_inplace(a_list: list) -> list:
     return a_list
 
 
-class TestSequenceList(unittest.TestCase):
+class TestList(unittest.TestCase):
     '''python built-in list'''
+
+    def setUp(self) -> None:
+        self.list1 = [1, 2, 3]
+        self.list2 = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
+
+    def test_list_mixed_type(self):
+        '''can have different types'''
+        self.assertEqual(type(False), type(self.list2[0]))
+        self.assertEqual(type(0), type(self.list2[1]))
+        self.assertEqual(type(1.0), type(self.list2[2]))
+
+    def test_neg_index(self):
+        '''syntax sugar ...'''
+        self.assertEqual(self.list2[0], self.list2[-7])
+        self.assertEqual(7, len(self.list2))
+        self.assertEqual(self.list2[-7], self.list2[len(self.list2)-7])  # list[-n] == list[len(list) - n]
+
+    def test_neg_index2(self):
+        '''allowed index range [-len, len-1]'''
+        with self.assertRaises(IndexError):
+            print(self.list2[-8])
 
     def test_copy_list(self):
         '''copy list'''
         list1 = list(range(10))
-        list2 = list1.copy()
+        list2 = list1.copy()  # method 1
         self.assertEqual(list1, list2)
         self.assertNotEqual(id(list1), id(list2))
-        list3 = list1[:]
+        list3 = list1[:]  # method 2
         self.assertEqual(list1, list3)
         self.assertNotEqual(id(list1), id(list3))
 
@@ -155,6 +168,13 @@ class TestSequenceList(unittest.TestCase):
 
         list3 = list(reversed(list1))
         self.assertEqual([4, 2, 1], list3)
+
+    def test_reverse_slice(self):
+        '''slice with -1 step to reverse'''
+        list1 = self.list1[::-1]
+        self.assertEqual([3, 2, 1], list1)
+        list1[0] = 1
+        self.assertEqual([1, 2, 3], self.list1)  # slice returned a deep copy
 
 
 if __name__ == '__main__':
