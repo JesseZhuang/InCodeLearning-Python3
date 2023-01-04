@@ -14,11 +14,6 @@ l = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 # 0x256_4cb0  memory address (32 bit?), machine dependent. saw 0x7ff6_61c1_6dc0 and 0x1_05c3_8180 on 64 bit
 print(hex(id(l)))
 
-print(l[4:-1])  # [[9, 7, 5], 'python'], combination of pos & neg index
-print(l[4:-6])  # [], if 2nd slice index on the left of 1st one
-print("4:-8", l[4:-8])  # not intuitive, no error
-print(l[6:3])  # [], same reason as above one
-
 print("======adding items to a list======")
 print(l + ['concat', 'at', 'end'])    # list concat, create a new list
 l.append([1, 2, 3])  # add a sublist
@@ -67,7 +62,7 @@ l.pop(-3)
 l.pop(-3)
 print(l)  # [True, 2, 3.5, 'python', 4, 5]
 
-print(hex(id(l)))  # 0x2584cb0, same as previous.
+print(hex(id(l)))  # 0x256_4cb0, same as previous.
 
 ls = [i for i in range(5)]
 print(ls)  # [0, 1, 2, 3, 4]
@@ -86,15 +81,6 @@ print(l_str)  # ['a', 'c', 'c#', 'c++', 'p', 'python']
 l2 = [4, 3, 2, 1, 0]
 print(hex(id(l2)))  # 0x554d50
 print(ls == l2)  # True, the comparison is not address, but content
-
-l.reverse()
-print(l)  # [5, 4, 'python', 3.5, 2, True]
-
-
-def reverse_list_inplace(a_list: list) -> list:
-    '''reverse a list in place'''
-    a_list.reverse()
-    return a_list
 
 
 class TestList(unittest.TestCase):
@@ -131,6 +117,12 @@ class TestList(unittest.TestCase):
         self.assertEqual(list1, list3)
         self.assertNotEqual(id(list1), id(list3))
 
+    def test_slicing(self):
+        '''slicing list'''
+        self.assertEqual([1, 2], self.list1[0:2])
+        self.assertEqual([], self.list1[2:-2])  # [], if 2nd slice index on the left of 1st one
+        self.assertEqual([], self.list1[2:-8])  # [], not intuitive, no IndexError
+
     def test_use_as_queue(self):
         '''use list as queue'''
         queue = [0, 1, 2, 3, 4]
@@ -149,9 +141,9 @@ class TestList(unittest.TestCase):
         self.assertEqual([1, 1, 1, 1, 1], [1] * 5)
 
     def test_reverse_list_inplace(self):
-        '''passed in list is reversed'''
+        '''reverse in place'''
         list1 = [1, 2, 3]
-        self.assertEqual([3, 2, 1], reverse_list_inplace(list1))
+        list1.reverse()
         self.assertEqual([3, 2, 1], list1)
 
     def test_reversed(self):
