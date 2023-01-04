@@ -15,8 +15,20 @@ class TestEverythingObject(unittest.TestCase):
     Testing everything_object.py first class everything in python.
     """
 
+    @classmethod
+    def setUpClass(cls):
+        cls.list1 = [1, 2, 3]
+
     def setUp(self):
         self.fun_object = everything_object.i_am_an_object
+
+    def test_setup(self):
+        self.__class__.list1.pop()
+        print('modified class variable in setup', self.__class__.list1)
+
+    def test_setup2(self):
+        self.__class__.list1.pop()
+        print('modified class variable in setup2', self.__class__.list1)
 
     def test_assign_to_var(self):
         self.assertEqual(self.fun_object, everything_object.i_am_an_object,
@@ -39,9 +51,10 @@ class TestEverythingObject(unittest.TestCase):
     def tearDown(self):
         self.fun_object = None
 
+
 # every module is an object having an attribute __name__
-print(everything_object.__name__)
-print(__name__)
+print(everything_object.__name__)  # everything_object or basics.everything_object
+print(__name__)  # __main__ or basics.test_everything_object
 
 # necessary when running python basics/test_everything_object.py
 if __name__ == '__main__':
