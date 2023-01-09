@@ -90,6 +90,17 @@ class TestList(unittest.TestCase):
         self.list1 = [1, 2, 3]
         self.list2 = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 
+    def test_list_add(self):
+        '''concat list'''
+        list3 = self.list1 + [4, 5]
+        self.assertEqual([1, 2, 3, 4, 5], list3)
+        self.assertEqual([1, 2, 3], self.list1)
+
+    def test_list_extend(self):
+        '''extend modify in place'''
+        self.list1.extend([4, 5])
+        self.assertEqual([1, 2, 3, 4, 5], self.list1)
+
     def test_list_mixed_type(self):
         '''can have different types'''
         self.assertEqual(type(False), type(self.list2[0]))
