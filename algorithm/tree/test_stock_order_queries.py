@@ -7,7 +7,7 @@ from algorithm.tree.stock_order_queries import StockOrder
 # pylint: disable=invalid-name
 
 
-class StockOrderTest(unittest.TestCase):
+class TestStockOrder(unittest.TestCase):
     '''unit test the class'''
 
     def setUp(self) -> None:
