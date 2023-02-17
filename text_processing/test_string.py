@@ -48,6 +48,11 @@ string
         with self.assertRaises(TypeError):
             'word'[0] = 'c'
 
+    def test_fstring_format1(self):
+        '''fsstring interpolation, digit format'''
+        price = 1.0
+        self.assertEqual(f'{0.7*price:.2f}', '0.70')
+
 
 if __name__ == '__main__':
     unittest.main()
