@@ -1,4 +1,5 @@
 '''test json module, python standard library'''
+import os
 import unittest
 import json
 
@@ -25,3 +26,13 @@ class TestJson(unittest.TestCase):
                           '  }\n'
                           ']')
                          )
+
+    def test_json_dumpload(self):
+        '''dump and load json object from file'''
+        d1 = {'key': 'value'}
+        file_name = 'myfile.json'
+        with open(file_name, 'w', encoding='utf8') as json_file:
+            json.dump(d1, json_file)
+        with open(file_name, 'r') as read_content:
+            self.assertEqual("{'key': 'value'}", str(json.load(read_content)))
+        os.remove(file_name)
