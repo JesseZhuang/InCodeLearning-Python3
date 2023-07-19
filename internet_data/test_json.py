@@ -1,4 +1,6 @@
 '''test json module, python standard library'''
+from io import StringIO
+
 import os
 import unittest
 import json
@@ -36,3 +38,13 @@ class TestJson(unittest.TestCase):
         with open(file_name, 'r') as read_content:
             self.assertEqual("{'key': 'value'}", str(json.load(read_content)))
         os.remove(file_name)
+
+    def test_json_stringio(self):
+        '''communicate via string io'''
+        io = StringIO()
+        string_o = '["dump", "to string io"]'
+        obj = ['dump', 'to string io']
+        json.dump(obj, io)
+        self.assertEqual(string_o, io.getvalue())
+        io = StringIO(string_o)
+        self.assertEqual(obj, json.load(io))
