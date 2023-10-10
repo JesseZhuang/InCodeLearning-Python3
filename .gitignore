@@ -2,7 +2,6 @@
 *.pyo
 *.pyc
 .ipynb_checkpoints/
-*.sh
 *.log
 *.log*
 *.swp
