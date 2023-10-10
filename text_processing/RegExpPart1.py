@@ -96,10 +96,11 @@ else:
 
 mo = re.search("([0-9]+).*: (.*)", "Customer number: 2454, Date: Feb 12, 2011")
 print("*********** back reference ************")
-print("Back reference .group():", mo.group())
-print("Back reference .group(0):", mo.group(0))
-print("Back reference group(1):", mo.group(1))
-print("Back reference group(2):", mo.group(2))
+print("Back reference .group():", mo.group())  # 2454, Date: Feb 12, 2011
+print("Back reference .group(0):", mo.group(0))  # 2454, Date: Feb 12, 2011
+print("Back reference group(1):", mo.group(1))  # 2454
+print("Back reference group(2):", mo.group(2))  # Feb 12, 2011
+
 
 print(re.search('[^aeiou]y$', 'vacancy'))
 # not raise error
