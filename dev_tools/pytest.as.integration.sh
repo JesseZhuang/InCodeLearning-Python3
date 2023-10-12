@@ -12,6 +12,8 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH TEST_ARGS=$TEST_ARGS bin/python3 -m 
 # note that the print script in test-integ may not flush
 # https://stackoverflow.com/questions/107705/disable-output-buffering
 # https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function
+# https://stackoverflow.com/questions/14058453/making-python-loggers-output-all-messages-to-stdout-in-addition-to-log-file
+# https://stackoverflow.com/questions/16633911/does-python-logging-flush-every-log
 retval=$?
 
 popd
