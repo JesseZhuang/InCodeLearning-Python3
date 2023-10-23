@@ -1,5 +1,6 @@
 '''leet code 133, medium'''
 
+from queue import Queue
 from typing import Optional
 
 from algorithm.struct.graph_node import Node
@@ -20,4 +21,21 @@ class Solution:
         val_node[node.val] = res
         for n in node.neighbors:
             res.neighbors.append(self.dfs(n, val_node))
+        return res
+
+    def cloneGraphBFS(self, node: Optional['Node']) -> Optional['Node']:
+        if not node:
+            return node
+        res = Node(node.val)
+        q = Queue()
+        q.put(node)
+        val_node = dict()
+        val_node[node.val] = res
+        while not q.empty():
+            cur = q.get()
+            for n in cur.neighbors:
+                if n.val not in val_node:
+                    q.put(n)
+                    val_node[n.val] = Node(n.val)
+                val_node[cur.val].neighbors.append(val_node[n.val])
         return res
