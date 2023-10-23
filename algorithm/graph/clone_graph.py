@@ -1,5 +1,6 @@
 '''leet code 133, medium'''
 
+from collections import deque
 from queue import Queue
 from typing import Optional
 
@@ -36,6 +37,23 @@ class Solution:
             for n in cur.neighbors:
                 if n.val not in val_node:
                     q.put(n)
+                    val_node[n.val] = Node(n.val)
+                val_node[cur.val].neighbors.append(val_node[n.val])
+        return res
+
+    def cloneGraphBFSDQ(self, node: Optional['Node']) -> Optional['Node']:
+        if not node:
+            return node
+        res = Node(node.val)
+        q = deque()
+        q.append(node)
+        val_node = dict()
+        val_node[node.val] = res
+        while len(q) > 0:
+            cur = q.pop()
+            for n in cur.neighbors:
+                if n.val not in val_node:
+                    q.append(n)
                     val_node[n.val] = Node(n.val)
                 val_node[cur.val].neighbors.append(val_node[n.val])
         return res
