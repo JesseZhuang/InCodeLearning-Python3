@@ -44,16 +44,16 @@ class Solution:
     def cloneGraphBFSDQ(self, node: Optional['Node']) -> Optional['Node']:
         if not node:
             return node
-        res = Node(node.val)
         q = deque()
         q.append(node)
+        res = Node(node.val)
         val_node = dict()
         val_node[node.val] = res
         while len(q) > 0:
-            cur = q.pop()
+            cur = q.popleft()
             for n in cur.neighbors:
-                if n.val not in val_node:
-                    q.append(n)
+                if not n.val in val_node:
                     val_node[n.val] = Node(n.val)
+                    q.append(n)
                 val_node[cur.val].neighbors.append(val_node[n.val])
         return res
