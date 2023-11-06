@@ -32,7 +32,7 @@ class Solution(object):
         v = matrix[r_mid][c_mid]
         # print('v', v, 't', target)
         # print(v == target)
-        if v < target:
+        if v < target:  # 
             return self.helper(matrix, r1, c_mid+1, r_mid, c2, target) \
                 or self.helper(matrix, r_mid+1, c1, r2, c_mid, target)  \
                 or self.helper(matrix, r_mid+1, c_mid+1, r2, c2, target)
