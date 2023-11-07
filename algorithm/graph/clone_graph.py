@@ -9,7 +9,7 @@ from algorithm.struct.graph_node import Node
 
 class Solution:
     def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
-        '''dfs, O(V+E, N^2) time, O(N) space'''
+        '''dfs, O(V+E, N^2) time, O(N) space 43ms, 16.7Mb'''
         val_node = dict()
         return self.dfs(node, val_node)
 
@@ -25,6 +25,7 @@ class Solution:
         return res
 
     def cloneGraphBFS(self, node: Optional['Node']) -> Optional['Node']:
+        '''42ms, 16.8Mb'''
         if not node:
             return node
         res = Node(node.val)
@@ -42,6 +43,7 @@ class Solution:
         return res
 
     def cloneGraphBFSDQ(self, node: Optional['Node']) -> Optional['Node']:
+        '''42ms, 16.8Mb'''
         if not node:
             return node
         q = deque()
