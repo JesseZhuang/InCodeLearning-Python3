@@ -17,19 +17,14 @@ class Solution(object):
         res.append(str(n//d))
         n %= d
         res.append(".")
-        i = len(res)
         n_ind = dict()
         while n:
-            n_ind[n] = i
+            n_ind[n] = len(res)
             n *= 10
             res.append(str(n//d))
             n %= d
-            i += 1
             if n in n_ind:
-                t = res[:n_ind[n]]
-                t.append("(")
-                t += res[n_ind[n]:]
-                t.append(")")
-                res = t
+                res.insert(n_ind[n],"(")
+                res.append(")")
                 break
-        return ''.join(res)
+        return "".join(res)
