@@ -8,4 +8,6 @@ class Solution:
             carry = a&b
             a ^= b
             b = carry << 1
-        return a if b ==0 else a&mask
+        return a if b == 0 else a&mask  # return a&mask if b overflow
+        # return a&mask fails for -12 + -8, expected -20, actual 4294967276
+        # return a fails for -1 + 1, expected 0, actual -4294967296
