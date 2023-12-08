@@ -18,6 +18,9 @@ each element of array A is an integer within the range [−1,000,000..1,000,000]
 '''
 
 
+from typing import List
+
+
 def first_missing_positive_set(nums: list[int]) -> int:
     '''O(n) time and space, using set. 308 ms, 28.6MB'''
     seen = set()
@@ -42,6 +45,22 @@ def solution(nums):
         if num != i+1:
             return i+1
     return len(nums) + 1
+
+
+def firstMissingPositive(self, nums: List[int]) -> int:
+    '''leetcode 344ms, 30.28Mb'''
+    l, i = len(nums), 0
+    while i < l:
+        n = nums[i]
+        if n == i+1 or n <= 0 or n > l or n == nums[n-1]:
+            i += 1
+        else:
+            nums[i] = nums[n-1]
+            nums[n-1] = n
+    i = 0
+    while i < l and nums[i] == i+1:
+        i += 1
+    return i+1
 
 
 solution([3, 4, -1, 1])  # buggy swap
