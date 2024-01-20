@@ -16,7 +16,7 @@ class TestDeque(unittest.TestCase):
             self.assertEqual(num, stack1.pop())
 
     def test_deque_as_queue(self):
-        '''use as stack'''
+        '''use as queue'''
         queue1 = deque()
         for num in [1, 2, 3]:
             queue1.append(num)
