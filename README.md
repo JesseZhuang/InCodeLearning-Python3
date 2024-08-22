@@ -54,10 +54,27 @@ install-on-request: 9,873 (30 days), 21,254 (90 days), 21,254 (365 days)
 build-error: 236 (30 days)
 ```
 
+### weird jq bug
+
 Previously installed conda on mac. Ran into a weird issue that the conda `jq` is overriding and behavior is different comparing to regular `jq`.
+
+### vs code virtual env
 
 1. use command palette (cmd+shift+p), python: create environment, pick the python 3.11 (`bisect` with `key` function available in 3.11) interpreter installed with brew.
 1. command palett, python: select interpreter, select the virtual env just created
 1. this will create a virtual env named `.venv` in workspace root, can activate on command line
 1. run file button will activate the virtual env as well
 1. python test explorer extension can run tests without activation of the virtual env
+
+
+### virtual env on command line
+
+```
+python3 -m venv test1
+cd test1
+source bin/activate
+which python
+which pip
+pip install requests
+pip list
+```
