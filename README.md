@@ -78,3 +78,7 @@ which pip
 pip install requests
 pip list
 ```
+
+## windows setup
+
+Used IntelliJ community edition. Installed python community edition plugin. Menu: "Project structure", "SDK", "Add Python SDK from disk", chose to download python 3.12 from python.org, SDK location set to <project_path>\venv, made it globally available for other projects. 
