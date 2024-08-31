@@ -1,4 +1,4 @@
-'''leet code 540, medium'''
+"""leet code 540, medium"""
 
 from typing import List
 
