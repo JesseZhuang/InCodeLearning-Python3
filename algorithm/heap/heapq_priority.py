@@ -1,16 +1,18 @@
 # priority queue
 import heapq
+
 try:
     import Queue as Q  # ver. < 3.0
 except ImportError:
     import queue as Q
 
-q = Q.PriorityQueue()
+q = Q.PriorityQueue()  # main difference vs heapq, this is thread safe, actually wrapper around heapq
 q.put((10, 'ten'))  # first item in the tuple should be comparable, same for heapq
 q.put((1, 'one'))
 q.put((5, 'five'))
 while not q.empty():
     print(q.get())
+
 
 # (1, 'one')
 # (5, 'five')
@@ -28,6 +30,8 @@ def heapsort(iterable):
 
 
 print(heapsort([1, 3, 5, 7, 9, 2, 4, 6, 8, 0]))
+
+
 # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
