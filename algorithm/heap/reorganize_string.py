@@ -25,7 +25,7 @@ class Solution1:
 
 class Solution2:
     def reorganizeString(self, s: str) -> str:
-        counts = Counter(s).most_common()
+        counts = Counter(s).most_common()  # sorting in most_common()
         n = len(s)
         if counts[0][1] > (n + 1) // 2: return ""
         res, i = [''] * n, 0
