@@ -1,7 +1,7 @@
 class TrieNode:
     def __init__(self):
         self.is_word = False
-        self.next = {}
+        self.next = {}  # note used dict, not array of links like in java
 
 
 class Trie:
@@ -15,7 +15,7 @@ class Trie:
             if c not in cur.next:
                 cur.next[c] = TrieNode()
             cur = cur.next[c]
-        cur.is_word = True
+        cur.is_word = True  # indentation important cannot be in for loop
 
     def search(self, word: str) -> bool:
         n = self.get(word)

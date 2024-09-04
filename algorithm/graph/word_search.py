@@ -17,7 +17,7 @@ class Solution:
         if r >= m or c >= n or r < 0 or c < 0 or board[r][c] == '8' or board[r][c] != word[index]:
             return False
         temp = board[r][c]
-        board[r][c] = '8'
+        board[r][c] = '8'  # note python has no char, just string length of 1
         dirs = [[0, 1], [0, -1], [-1, 0], [1, 0]]
         for dr in dirs:
             if self.dfs(board, r + dr[0], c + dr[1], index + 1, word): return True
