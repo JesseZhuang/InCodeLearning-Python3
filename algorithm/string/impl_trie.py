@@ -1,3 +1,6 @@
+"""leet code 208, medium"""
+
+
 class TrieNode:
     def __init__(self):
         self.is_word = False
