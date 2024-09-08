@@ -28,7 +28,7 @@ class Solution2:
         counts = Counter(s).most_common()  # sorting in most_common()
         n = len(s)
         if counts[0][1] > (n + 1) // 2: return ""
-        res, i = [''] * n, 0
+        res, i = [""] * n, 0
         for c, cnt in counts:
             for j in range(cnt):
                 res[i] = c
