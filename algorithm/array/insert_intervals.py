@@ -1,4 +1,5 @@
 '''leet code 57 medium'''
+from typing import List
 
 
 class Solution:
