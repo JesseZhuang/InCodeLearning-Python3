@@ -1,4 +1,5 @@
 """leet code 212, hard"""
+from typing import List
 
 from algorithm.string.impl_trie import Trie
 
@@ -58,3 +59,44 @@ class Solution(object):
             if board[ni][nj] in node.next:
                 self.dfs(board, node, ni, nj, candidate + board[ni][nj], res)
         board[i][j] = tmp
+
+
+class Solution2:
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        res = []
+        m, n = len(board), len(board[0])
+        dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+        root = Node()
+        for w in words: root.insert(w)
+
+        def dfs(r, c, node):
+            if r < 0 or r > m - 1 or c < 0 or c > n - 1: return
+            tmp = board[r][c]
+            if tmp not in node.next or tmp == "#": return
+            node = node.next[tmp]
+            if node.word:
+                res.append(node.word)
+                node.word = None
+            board[r][c] = "#"
+            for d in dirs:
+                nr, nc = r + d[0], c + d[1]
+                dfs(nr, nc, node)
+            board[r][c] = tmp
+
+        for r in range(m):
+            for c in range(n):
+                dfs(r, c, root)
+        return res
+
+
+class Node:
+    def __init__(self):
+        self.word = None
+        self.next = dict()
+
+    def insert(self, word):
+        n = self
+        for c in word:
+            if c not in n.next: n.next[c] = Node()
+            n = n.next[c]
+        n.word = word

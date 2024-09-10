@@ -25,13 +25,13 @@ MAX_TIME = 50000
 
 
 class Solution:
-    """
-    @param meeting: the meetings
-    @param value: the value
-    @return: calculate the max value
-    """
 
     def maxValue(self, meetings, values):
+        """
+        @param meeting: the meetings
+        @param value: the value
+        @return: calculate the max value
+        """
         end_start_val = collections.defaultdict(list)
         for i in range(len(meetings)):
             end_start_val[meetings[i][1]].append((meetings[i][0], values[i]))
