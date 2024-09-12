@@ -11,7 +11,7 @@ class Solution:
             adj[e[1]].append(e[0])
         ranks = [0] * n
 
-        def dfs(v, parent, rank):
+        def dfs(v: int, parent: int, rank: int) -> int:
             ranks[v] = rank
             for w in adj[v]:
                 if w == parent: continue

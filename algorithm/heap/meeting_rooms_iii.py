@@ -5,7 +5,7 @@ from typing import List
 
 class Solution:
     def mostBooked(self, n: int, meetings: List[List[int]]) -> int:
-        used, unused, cnt = [], list(range(n)), [0] * n
+        used, unused, cnt = [], list(range(n)), [0] * n  # do not forget to init unused
         meetings.sort()  # sort by start time
 
         for start, end in meetings:
