@@ -1,4 +1,4 @@
-'''leet code 329, hard'''
+"""leet code 329, hard"""
 
 from collections import deque
 from typing import List

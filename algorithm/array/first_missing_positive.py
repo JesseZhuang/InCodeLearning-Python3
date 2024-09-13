@@ -1,5 +1,5 @@
 '''
-variant of leetcode 41
+variant of leet code 41
 Write a function:
 def solution(A)
 that, given an array A of N integers, returns the
@@ -17,7 +17,6 @@ N is an integer within the range [1..100,000];
 each element of array A is an integer within the range [−1,000,000..1,000,000].
 '''
 
-
 from typing import List
 
 
@@ -27,7 +26,7 @@ def first_missing_positive_set(nums: list[int]) -> int:
     for num in nums:
         if num not in seen and 0 < num <= len(nums):
             seen.add(num)
-    for i in range(1, len(nums)+1):
+    for i in range(1, len(nums) + 1):
         if i not in seen:
             return i
     return len(nums) + 1
@@ -38,29 +37,30 @@ def solution(nums):
     for i, num in enumerate(nums):
         def swap(nums, i, j):
             nums[i], nums[j] = nums[j], nums[i]
-        while 0 < nums[i] <= len(nums) and nums[nums[i]-1] != nums[i]:
-            swap(nums, i, nums[i]-1)
+
+        while 0 < nums[i] <= len(nums) and nums[nums[i] - 1] != nums[i]:
+            swap(nums, i, nums[i] - 1)
             # nums[i], nums[nums[i]-1] = nums[nums[i]-1], nums[i] not swapping: bug
     for i, num in enumerate(nums):
-        if num != i+1:
-            return i+1
+        if num != i + 1:
+            return i + 1
     return len(nums) + 1
 
 
 def firstMissingPositive(self, nums: List[int]) -> int:
-    '''leetcode 344ms, 30.28Mb'''
+    '''lc 344ms, 30.28Mb'''
     l, i = len(nums), 0
     while i < l:
         n = nums[i]
-        if n == i+1 or n <= 0 or n > l or n == nums[n-1]:
+        if n == i + 1 or n <= 0 or n > l or n == nums[n - 1]:
             i += 1
         else:
-            nums[i] = nums[n-1]
-            nums[n-1] = n
+            nums[i] = nums[n - 1]
+            nums[n - 1] = n
     i = 0
-    while i < l and nums[i] == i+1:
+    while i < l and nums[i] == i + 1:
         i += 1
-    return i+1
+    return i + 1
 
 
 solution([3, 4, -1, 1])  # buggy swap

@@ -7,7 +7,7 @@ class Solution:
     def shortestPath(self, grid: List[List[int]], k: int) -> int:
         r, c = len(grid), len(grid[0])
         visited = set()
-        visited.add((0, 0, 0))
+        visited.add((0, 0, 0))  # marked=[[[False]*(k+1) for _ in range(n)] for _ in range(m)] if want to use 3d array
         q = deque()
         q.append((0, 0, 0))
         dirs = [[0, 1], [1, 0], [-1, 0], [0, -1]]

@@ -1,5 +1,5 @@
 '''
-lintcode 1250, leetcode 414
+lint code 1250, leet code 414
 no constraints that the integers are positive
 '''
 
