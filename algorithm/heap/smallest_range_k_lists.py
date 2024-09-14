@@ -8,7 +8,7 @@ class Solution:
         pq = [(row[0], r, 0) for r, row in enumerate(nums)]  # first element of tuple should be key
         heapq.heapify(pq)
 
-        left, right = -1e9, 1e9
+        left, right = -1e5, 1e5
         max_v = max(row[0] for row in nums)
         while pq:
             v, r, c = heapq.heappop(pq)
