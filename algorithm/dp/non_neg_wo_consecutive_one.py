@@ -3,14 +3,14 @@
 
 class Solution:
     def findIntegers(self, n: int) -> int:
-        dp = [0] * 32
-        dp[0], dp[1] = 1, 2
+        f = [0] * 32
+        f[0], f[1] = 1, 2
         for i in range(2, 32):
-            dp[i] = dp[i - 1] + dp[i - 2]
+            f[i] = f[i - 1] + f[i - 2]
         res, pre_bit = 0, False
         for k in range(30, -1, -1):
             if n & (1 << k):
-                res += dp[k]
+                res += f[k]
                 if pre_bit:
                     return res
                 else:
