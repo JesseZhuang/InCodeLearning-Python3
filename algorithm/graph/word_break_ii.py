@@ -1,6 +1,8 @@
 """leet code 140, hard"""
 from typing import List
 
+from algorithm.struct.trie_node import TrieNode
+
 
 class Solution:
 
@@ -8,7 +10,7 @@ class Solution:
         d = set()
         max_l = 0
         for w in wordDict:
-            max_l = max(self.max_l, w)
+            max_l = max(max_l, w)
             d.add(w)
         i_s = dict()  # index -> list of strings for s[index:]
 
@@ -29,3 +31,26 @@ class Solution:
             return cur  # list of strings for s[start:]
 
         return dfs(0)
+
+
+class SolutionTrie:
+    def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        root = TrieNode()
+        for w in wordDict: root.insert(w)
+        cache = dict()  # index->[sentences]
+        for start in range(len(s) - 1, -1, -1):
+            sentences = []
+            cur = root
+            for end in range(start, len(s)):
+                c = s[end]
+                if c not in cur.next: break
+                cur = cur.next[c]
+                if cur.is_word:
+                    cw = s[start:end + 1]
+                    if end == len(s) - 1:
+                        sentences.append(cw)
+                    else:
+                        for sentence in cache.get(end + 1):
+                            sentences.append(cw + " " + sentence)
+            cache[start] = sentences
+        return cache.get(0, [])

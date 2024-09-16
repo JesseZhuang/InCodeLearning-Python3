@@ -1,7 +1,7 @@
 """leet code 212, hard"""
 from typing import List
 
-from algorithm.string.impl_trie import Trie
+from algorithm.struct.trie_node import TrieNode
 
 
 # class Solution:
@@ -29,44 +29,12 @@ from algorithm.string.impl_trie import Trie
 #                 self.dfs(board, trie, ni, nj, res, candidate + board[ni][nj])
 #         board[i][j] = tmp
 
-
-class Solution(object):
-    def findWords(self, board, words):
-        res = set()
-        trie = Trie()
-        node = trie.root
-        for w in words:
-            trie.insert(w)
-        for i in range(len(board)):
-            for j in range(len(board[0])):
-                c = board[i][j]
-                if c in node.next:
-                    self.dfs(board, node, i, j, c, res)
-        return list(res)
-
-    def dfs(self, board, node, i, j, candidate, res):
-        tmp = board[i][j]
-        board[i][j] = "#"
-        node = node.next[tmp]
-        if node.is_word:
-            res.add(candidate)
-            # node.isWord = False
-        dirs = [[0, 1], [1, 0], [-1, 0], [0, -1]]
-        for d in dirs:
-            ni, nj = i + d[0], j + d[1]
-            if ni < 0 or ni > len(board) - 1 or nj < 0 or nj > len(board[0]) - 1 or board[ni][nj] == "#":
-                continue
-            if board[ni][nj] in node.next:
-                self.dfs(board, node, ni, nj, candidate + board[ni][nj], res)
-        board[i][j] = tmp
-
-
-class Solution2:
+class Solution:
     def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
         res = []
         m, n = len(board), len(board[0])
         dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-        root = Node()
+        root = TrieNode()
         for w in words: root.insert(w)
 
         def dfs(r, c, node):
@@ -87,16 +55,3 @@ class Solution2:
             for c in range(n):
                 dfs(r, c, root)
         return res
-
-
-class Node:
-    def __init__(self):
-        self.word = None
-        self.next = dict()
-
-    def insert(self, word):
-        n = self
-        for c in word:
-            if c not in n.next: n.next[c] = Node()
-            n = n.next[c]
-        n.word = word
