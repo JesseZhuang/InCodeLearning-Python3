@@ -11,15 +11,14 @@ class Solution:
             adj[e[0]].append(e[1])
             adj[e[1]].append(e[0])
 
-        def dfs(v: int, parent: int, rank: int) -> int:
-            if ranks[v] != 0: return ranks[v]
+        def dfs(v: int, parent: int, rank: int) -> None:
+            if ranks[v] != 0: return
             ranks[v] = rank
             for w in adj[v]:
                 if w == parent: continue
-                ranks[w] = dfs(w, v, rank + 1)
+                dfs(w, v, rank + 1)
                 ranks[v] = min(ranks[v], ranks[w])
                 if rank < ranks[w]: res.append([v, w])
-            return ranks[v]
 
         dfs(0, 0, 1)
         return res

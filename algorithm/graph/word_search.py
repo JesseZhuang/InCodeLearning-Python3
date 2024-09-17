@@ -5,21 +5,23 @@ from typing import List
 
 class Solution:
     def exist(self, board: List[List[str]], word: str) -> bool:
+        """4274ms, 16.6mb"""
         m, n = len(board), len(board[0])
-        for i in range(0, m):
-            for j in range(0, n):
-                if self.dfs(board, i, j, 0, word): return True
-        return False
+        dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 
-    def dfs(self, board, r, c, index, word):
-        m, n = len(board), len(board[0])
-        if index == len(word): return True
-        if r >= m or c >= n or r < 0 or c < 0 or board[r][c] == '8' or board[r][c] != word[index]:
+        def dfs(r: int, c: int, i: int) -> bool:
+            if r < 0 or r > m - 1 or c < 0 or c > n - 1: return False
+            tmp = board[r][c]
+            if word[i] != tmp: return False
+            if i == len(word) - 1: return True
+            board[r][c] = "#"
+            for d in dirs:
+                nr, nc = r + d[0], c + d[1]
+                if dfs(nr, nc, i + 1): return True
+            board[r][c] = tmp
             return False
-        temp = board[r][c]
-        board[r][c] = '8'  # note python has no char, just string length of 1
-        dirs = [[0, 1], [0, -1], [-1, 0], [1, 0]]
-        for dr in dirs:
-            if self.dfs(board, r + dr[0], c + dr[1], index + 1, word): return True
-        board[r][c] = temp
+
+        for r in range(m):
+            for c in range(n):
+                if dfs(r, c, 0): return True
         return False
