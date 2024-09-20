@@ -12,18 +12,17 @@ class MyQueue:
         self.input.append(x)
 
     def pop(self) -> int:
-        if len(self.out) == 0:
-            self.transfer()
+        self.transfer()
         return self.out.pop()
 
     def peek(self) -> int:
-        if len(self.out) == 0:
-            self.transfer()
+        self.transfer()
         return self.out[-1]
 
     def transfer(self):
-        while len(self.input) != 0:
-            self.out.append(self.input.pop())
+        if len(self.out) == 0:
+            while len(self.input) != 0:
+                self.out.append(self.input.pop())
 
     def empty(self) -> bool:
         return len(self.input) == 0 and len(self.out) == 0

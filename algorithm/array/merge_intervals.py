@@ -3,6 +3,8 @@ from typing import List
 
 
 class Solution:
+    """128ms, 20.5mb"""
+
     def merge(self, intervals: List[List[int]]) -> List[List[int]]:
         intervals.sort()
         res = [intervals[0]]

@@ -4,16 +4,19 @@ from typing import List
 
 
 class Solution:
+    """203ms, 27.22mb"""
 
     def __init__(self, n: int, blacklist: List[int]):
-        self.mapping = dict()
-        for b in blacklist: self.mapping[b] = -1
-        self.m = n - len(self.mapping)  # 2,3,5:-1; 2:6,3:4,5:-1
+        mapping = dict()
+        for b in blacklist: mapping[b] = -1
+        m = n - len(mapping)  # 2,3,5:-1; 2:6,3:4,5:-1
         for b in blacklist:
-            if b >= self.m: continue
-            while n - 1 in self.mapping: n -= 1
-            self.mapping[b] = n - 1
+            if b >= m: continue
+            while n - 1 in mapping: n -= 1
+            mapping[b] = n - 1
             n -= 1
+        self.mapping = mapping
+        self.m = m
 
     def pick(self) -> int:
         p = random.randrange(self.m)

@@ -7,7 +7,7 @@ import functools
 
 
 def longestCommonSubsequenceDP(self, text1: str, text2: str) -> int:
-    '''dp, O(MN)time, O(min(M,N)) space, 322ms, 13.8Mb'''
+    """dp, O(MN)time, O(min(M,N)) space, 322ms, 13.8Mb"""
     m, n = map(len, (text1, text2))
     if m < n:
         return self.longestCommonSubsequence(text2, text1)
@@ -21,7 +21,7 @@ def longestCommonSubsequenceDP(self, text1: str, text2: str) -> int:
 
 
 def longestCommonSubsequenceRecursive(self, text1: str, text2: str) -> int:
-    '''726ms, 140.5Mb. O(2^N) time and space'''
+    """726ms, 140.5Mb. O(2^N) time and space"""
 
     @functools.lru_cache(None)
     def helper(i, j):

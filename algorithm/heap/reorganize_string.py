@@ -6,9 +6,11 @@ from collections import Counter
 
 class Solution1:
     def reorganizeString(self, s: str) -> str:
+        """36ms, 16.62mb"""
         counter = Counter(s)
         char_cnt = [(-counter[c], c) for c in counter]
         heapq.heapify(char_cnt)
+        if -char_cnt[0][0] > (len(s) + 1) // 2: return ""
 
         res, prev = [], None
         while char_cnt:
@@ -17,10 +19,7 @@ class Solution1:
             counter[c] -= 1
             if prev and counter[prev] > 0: heapq.heappush(char_cnt, (-counter[prev], prev))
             prev = c
-        if counter[prev] == 0:
-            return "".join(res)
-        else:
-            return ""
+        return "".join(res)
 
 
 class Solution2:

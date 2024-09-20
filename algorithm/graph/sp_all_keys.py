@@ -4,6 +4,8 @@ from typing import List
 
 
 class Solution:
+    """186ms, 21.3mb"""
+
     def shortestPathAllKeys(self, grid: List[str]) -> int:
         def k_i(c):
             return ord(c) - ord("a")

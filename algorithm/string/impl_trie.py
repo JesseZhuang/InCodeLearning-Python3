@@ -1,4 +1,5 @@
-"""leet code 208, medium"""
+"""leet code 208, medium, 133ms, 31.6mb"""
+from typing import Optional
 
 
 class TrieNode:
@@ -15,7 +16,7 @@ class Trie:
     def insert(self, word: str) -> None:
         cur = self.root
         for c in word:
-            if c not in cur.next:
+            if c not in cur.next:  # can use defaultdict(dict), then if not cur.next[c]:
                 cur.next[c] = TrieNode()
             cur = cur.next[c]
         cur.is_word = True  # indentation important cannot be in for loop
@@ -28,7 +29,7 @@ class Trie:
         n = self.get(prefix)
         return n is not None
 
-    def get(self, word):
+    def get(self, word: str) -> Optional[TrieNode]:
         cur = self.root
         for c in word:
             if c not in cur.next: return None

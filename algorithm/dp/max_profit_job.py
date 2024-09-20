@@ -5,6 +5,8 @@ from sortedcontainers import SortedDict
 
 
 class Solution:
+    """794ms, 54.9mb"""
+
     def jobScheduling(self, startTime: List[int], endTime: List[int], profit: List[int]) -> int:
         jobs = list(zip(startTime, endTime, profit))
         dp = sorted(jobs, key=lambda j: j[1])

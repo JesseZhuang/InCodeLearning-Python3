@@ -3,6 +3,8 @@ from collections import deque
 
 
 class Solution:
+    """76ms, 18.1mb"""
+
     def calculate(self, s: str) -> int:
         vals = deque()
         res, sign, i = 0, 1, 0
