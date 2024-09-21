@@ -1,9 +1,10 @@
-"""leet code 279 medium"""
+"""leet code 279, medium"""
 
 import math
 
 
-class Solution:
+class Solution1:
+    """2617ms, 16.61mb"""
 
     def __init__(self):
         self.dp = [0]
@@ -19,6 +20,10 @@ class Solution:
             dp.append(nex)
 
         return dp[n]
+
+
+class Solution2:
+    """43ms, 16.32mb"""
 
     def numSquares(self, n: int) -> int:
         """43ms, 16.3Mb """

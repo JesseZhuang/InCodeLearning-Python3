@@ -6,13 +6,14 @@ from typing import List
 class Solution:
     def findMinDifference(self, timePoints: List[str]) -> int:
         """62ms, 19.6Mb"""
-        minutes = [False] * (24 * 60)
+        day = 24 * 60
+        minutes = [False] * day
         for t in timePoints:
             m = int(t[:2]) * 60 + int(t[3:])
             if minutes[m]: return 0
             minutes[m] = True
         prev, first, last, res = -1, -1, -1, inf
-        for i in range(24 * 60):
+        for i in range(day):
             if minutes[i]:
                 if prev != -1:
                     res = min(res, i - prev)
@@ -20,4 +21,4 @@ class Solution:
                 prev = i
                 last = i
 
-        return min(res, 24 * 60 - (last - first))
+        return min(res, day - (last - first))

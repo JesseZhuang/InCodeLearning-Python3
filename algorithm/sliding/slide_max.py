@@ -5,6 +5,8 @@ from typing import List
 
 
 class Solution:
+    """1113ms, 32.3mb"""
+
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
         res = []
         q = deque()

@@ -4,6 +4,8 @@ from typing import List
 
 
 class Solution:
+    """776ms,27.4mb"""
+
     def maxProfit(self, prices: List[int]) -> int:
         res, min_seen = 0, inf  # res: max_here max profit sold at that index
         for p in prices:

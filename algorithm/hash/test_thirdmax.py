@@ -1,5 +1,6 @@
 import unittest
-from algorithm.dict.third_max import ThirdMax
+
+from algorithm.hash.third_max import ThirdMax
 
 
 class TestThirdMax(unittest.TestCase):
