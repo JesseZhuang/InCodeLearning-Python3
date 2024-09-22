@@ -2,6 +2,8 @@
 
 
 class Solution:
+    """99ms, 16.63mb"""
+
     def multiply(self, num1: str, num2: str) -> str:
         m, n = len(num1), len(num2)
         res = [0] * (m + n)
