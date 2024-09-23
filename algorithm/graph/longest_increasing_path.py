@@ -5,9 +5,9 @@ from functools import lru_cache
 from typing import List
 
 
-class Solution:
+class SolutionDFS:
 
-    def longestIncreasingPath1(self, matrix: List[List[int]]) -> int:
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
         """374ms, 19.8Mb"""
 
         dirs = [[0, 1], [0, -1], [1, 0], [-1, 0]]
@@ -30,6 +30,9 @@ class Solution:
             for c in range(n):
                 res = max(res, dfs(r, c))
         return res
+
+
+class SolutionBFS:
 
     def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
         """399ms, 17.04Mb"""
