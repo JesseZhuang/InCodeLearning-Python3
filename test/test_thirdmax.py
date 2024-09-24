@@ -4,7 +4,7 @@ from algorithm.hash.third_max import ThirdMax
 
 
 class TestThirdMax(unittest.TestCase):
-    '''unit test'''
+    """unit test"""
 
     def setUp(self) -> None:
         self.tbt = ThirdMax()

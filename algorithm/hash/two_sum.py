@@ -3,6 +3,8 @@ from typing import List
 
 
 class Solution:
+    """63ms, 17.75mb"""
+
     def twoSum(self, nums: List[int], target: int) -> List[int]:
         val_ind = dict()
         for i, n in enumerate(nums):

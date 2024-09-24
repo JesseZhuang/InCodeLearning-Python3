@@ -3,14 +3,13 @@ from typing import List
 
 
 class Solution:
-    def findAndReplacePattern(self, words: List[str], pattern: str) -> List[str]:
-        """27ms, 16.56mb"""
+    """27ms, 16.56mb"""
 
-        def match(w: str) -> bool:
+    def findAndReplacePattern(self, words: List[str], pattern: str) -> List[str]:
+        def match(word: str) -> bool:
             llm = dict()
-            for w, p in zip(w, pattern):
+            for w, p in zip(word, pattern):
                 if llm.setdefault(w, p) != p: return False  # return existing value or new value
-                llm[w] = p
             return len(set(llm.values())) == len(llm.values())
 
         return list(filter(match, words))

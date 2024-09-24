@@ -2,6 +2,8 @@
 
 
 class Solution:
+    """45ms, 16.9mb"""
+
     def countAndSay(self, n: int) -> str:
         res = "1"
         while n > 1:

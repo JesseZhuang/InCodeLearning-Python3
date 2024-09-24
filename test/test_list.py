@@ -1,13 +1,11 @@
-'''
+"""
 python list
 C source https://github.com/python/cpython/blob/master/Include/listobject.h
 dynamic array, not linked list
 array can only contain same type items, list is mutable
-'''
-
+"""
 
 import unittest
-
 
 l = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 
@@ -15,7 +13,7 @@ l = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 print(hex(id(l)))
 
 print("======adding items to a list======")
-print(l + ['concat', 'at', 'end'])    # list concat, create a new list
+print(l + ['concat', 'at', 'end'])  # list concat, create a new list
 l.append([1, 2, 3])  # add a sublist
 print(l)
 # [True, 2, 3.5, (5-8j), [9, 7, 5], 'python', ('a', 2), [1, 2, 3]]
@@ -84,42 +82,42 @@ print(ls == l2)  # True, the comparison is not address, but content
 
 
 class TestList(unittest.TestCase):
-    '''python built-in list'''
+    """python built-in list"""
 
     def setUp(self) -> None:
         self.list1 = [1, 2, 3]
         self.list2 = [True, 2, 3.5, 5 - 8j, [9, 7, 5], 'python', ('a', 2)]
 
     def test_list_add(self):
-        '''concat list'''
+        """concat list"""
         list3 = self.list1 + [4, 5]
         self.assertEqual([1, 2, 3, 4, 5], list3)
         self.assertEqual([1, 2, 3], self.list1)
 
     def test_list_extend(self):
-        '''extend modify in place'''
+        """extend modify in place"""
         self.list1.extend([4, 5])
         self.assertEqual([1, 2, 3, 4, 5], self.list1)
 
     def test_list_mixed_type(self):
-        '''can have different types'''
+        """can have different types"""
         self.assertEqual(type(False), type(self.list2[0]))
         self.assertEqual(type(0), type(self.list2[1]))
         self.assertEqual(type(1.0), type(self.list2[2]))
 
     def test_neg_index(self):
-        '''syntax sugar ...'''
+        """syntax sugar ..."""
         self.assertEqual(self.list2[0], self.list2[-7])
         self.assertEqual(7, len(self.list2))
-        self.assertEqual(self.list2[-7], self.list2[len(self.list2)-7])  # list[-n] == list[len(list) - n]
+        self.assertEqual(self.list2[-7], self.list2[len(self.list2) - 7])  # list[-n] == list[len(list) - n]
 
     def test_neg_index2(self):
-        '''allowed index range [-len, len-1]'''
+        """allowed index range [-len, len-1]"""
         with self.assertRaises(IndexError):
             print(self.list2[-8])
 
     def test_copy_list(self):
-        '''copy list'''
+        """copy list"""
         list1 = list(range(10))
         list2 = list1.copy()  # method 1
         self.assertEqual(list1, list2)
@@ -129,13 +127,13 @@ class TestList(unittest.TestCase):
         self.assertNotEqual(id(list1), id(list3))
 
     def test_slicing(self):
-        '''slicing list'''
+        """slicing list"""
         self.assertEqual([1, 2], self.list1[0:2])
         self.assertEqual([], self.list1[2:-2])  # [], if 2nd slice index on the left of 1st one
         self.assertEqual([], self.list1[2:-8])  # [], not intuitive, no IndexError
 
     def test_use_as_queue(self):
-        '''use list as queue'''
+        """use list as queue"""
         queue = [0, 1, 2, 3, 4]
         queue.append(5)  # ok, amortized constant time
         queue.append(6)
@@ -144,21 +142,21 @@ class TestList(unittest.TestCase):
         self.assertEqual(6, len(queue))
 
     def test_using_range(self):
-        '''natural number list'''
+        """natural number list"""
         self.assertEqual([2, 3, 4], list(range(2, 5)))
 
     def test_create_list_filled(self):
-        '''create a list filled with same value'''
+        """create a list filled with same value"""
         self.assertEqual([1, 1, 1, 1, 1], [1] * 5)
 
     def test_reverse_list_inplace(self):
-        '''reverse in place'''
+        """reverse in place"""
         list1 = [1, 2, 3]
         list1.reverse()
         self.assertEqual([3, 2, 1], list1)
 
     def test_reversed(self):
-        '''reversed() get a reversed iterator on the orignal copy'''
+        """reversed() get a reversed iterator on the orignal copy"""
         list1 = [1, 2, 3]
         reversed_list1 = reversed(list1)
         self.assertEqual('list_reverseiterator', type(reversed_list1).__name__)
@@ -173,7 +171,7 @@ class TestList(unittest.TestCase):
         self.assertEqual([4, 2, 1], list3)
 
     def test_reverse_slice(self):
-        '''slice with -1 step to reverse'''
+        """slice with -1 step to reverse"""
         list1 = self.list1[::-1]
         self.assertEqual([3, 2, 1], list1)
         list1[0] = 1

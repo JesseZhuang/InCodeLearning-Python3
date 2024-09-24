@@ -1,4 +1,4 @@
-'''
+"""
 https://docs.python.org/3/library/threading.html
 python multithreading
 CPython implementation detail: In CPython, due to the Global Interpreter Lock, 
@@ -7,26 +7,26 @@ libraries might overcome this limitation). If you want your application to make 
 the computational resources of multi-core machines, you are advised to use multiprocessing or 
 concurrent.futures.ProcessPoolExecutor. However, threading is still an appropriate model 
 if you want to run multiple I/O-bound tasks simultaneously.
-'''
+"""
 import os
 import threading
 import time
 
 
 def print_cube(num):
-    '''function to print cube of given num'''
+    """function to print cube of given num"""
     thread_name = threading.current_thread().name
     print('active number of threads:', threading.active_count(), f'. Sleeping 2s in {thread_name}')
     time.sleep(2)
     print(f'{thread_name}: process id {os.getpid()}')
-    print(f"Cube: {num*num*num}")
+    print(f"Cube: {num * num * num}")
 
 
 def print_square(num):
-    '''function to print square of given num'''
+    """function to print square of given num"""
     time.sleep(3)
     print(f'Slept 3s in {threading.current_thread().name}', 'active number of threads: ', threading.active_count())
-    print(f"Square: {num*num}")
+    print(f"Square: {num * num}")
 
 
 if __name__ == "__main__":

@@ -1,24 +1,24 @@
-'''
+"""
 python 3 lock
-'''
+"""
 
-import threading
-import time
 import logging
 import random
+import threading
+import time
 
-logging.basicConfig(level=logging.DEBUG, format='(%(threadName)-9s) %(message)s',)  # printf field width 9
+logging.basicConfig(level=logging.DEBUG, format='(%(threadName)-9s) %(message)s', )  # printf field width 9
 
 
 class Counter(object):
-    '''counting things'''
+    """counting things"""
 
     def __init__(self, start=0):
         self.lock = threading.Lock()
         self.value = start
 
     def increment(self):
-        '''increment counter'''
+        """increment counter"""
         logging.debug('Waiting for a lock')
         self.lock.acquire()
         try:
@@ -30,7 +30,7 @@ class Counter(object):
 
 
 def worker(c):
-    '''workers using counter'''
+    """workers using counter"""
     for _ in range(2):
         r = random.random()
         logging.debug('Sleeping %0.02f', r)

@@ -14,7 +14,7 @@ class Solution1:
         self.e = expression
         n = len(expression)
         self.dp = [[[] for _ in range(n)] for _ in range(n)]
-        self._initialize_base_cases()
+        self._init_base_cases()
         for length in range(3, n + 1):
             for start in range(n - length + 1):
                 end = start + length - 1
@@ -22,7 +22,7 @@ class Solution1:
 
         return self.dp[0][n - 1]
 
-    def _initialize_base_cases(self):
+    def _init_base_cases(self):
         e, dp = self.e, self.dp
         # Handle base cases: single digits and two-digit numbers
         for i, char in enumerate(e):

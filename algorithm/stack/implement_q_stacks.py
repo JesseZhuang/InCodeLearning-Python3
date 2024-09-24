@@ -3,6 +3,7 @@ from collections import deque
 
 
 class MyQueue:
+    """32ms, 16.8mb"""
 
     def __init__(self):
         self.input = deque()

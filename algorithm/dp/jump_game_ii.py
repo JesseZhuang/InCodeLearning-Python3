@@ -3,6 +3,8 @@ from typing import List
 
 
 class Solution:
+    """109ms, 17.59mb"""
+
     def jump(self, nums: List[int]) -> int:
         i, p, reach, res = 0, 0, 0, 0
         while p < len(nums) - 1:

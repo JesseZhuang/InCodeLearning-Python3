@@ -1,7 +1,7 @@
-'''
+"""
 lint code 1250, leet code 414
 no constraints that the integers are positive
-'''
+"""
 
 from sortedcontainers import SortedSet
 
@@ -9,7 +9,7 @@ from sortedcontainers import SortedSet
 class ThirdMax:
 
     def third_max(self, nums: list[int]) -> int:
-        '''third max or max'''
+        """third max or max"""
         s = SortedSet()
         for n in nums:
             s.add(n)
