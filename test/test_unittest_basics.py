@@ -1,4 +1,6 @@
 import unittest
+
+
 # command line interface usage
 # python -m unittest test_module1 test_module2
 # python -m unittest test_module.TestClass
@@ -22,7 +24,7 @@ class FooTestSetupTearDown(unittest.TestCase):
         """ Setting up for the test """
         print("FooTest:setUp_:begin")
         # do something begin ...
-        testname = self.shortDescription()   # takes docstring from testcase
+        testname = self.shortDescription()  # takes docstring from testcase
         if testname == "Test routine A":
             print("setting up for test A")
         elif testname == "Test routine B":
@@ -95,7 +97,7 @@ class BarTest(unittest.TestCase):
 
 # create/add/execute a test suite (todo report a testsuite )
 newSuite = unittest.TestSuite()
-newSuite.addTest(unittest.makeSuite(FooTest))
+newSuite.addTest(unittest.TestLoader().loadTestsFromTestCase(FooTest))
 newSuite.addTest(FooTest("tc1"))
 newSuite.addTest(BarTest("tc1"))
 
