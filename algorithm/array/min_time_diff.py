@@ -14,11 +14,11 @@ class Solution:
             minutes[m] = True
         prev, first, last, res = -1, -1, -1, inf
         for i in range(day):
-            if minutes[i]:
-                if prev != -1:
-                    res = min(res, i - prev)
-                if first == -1: first = i
-                prev = i
-                last = i
+            if not minutes[i]: continue
+            if prev != -1:
+                res = min(res, i - prev)
+            if first == -1: first = i
+            prev = i
+            last = i
 
         return min(res, day - (last - first))

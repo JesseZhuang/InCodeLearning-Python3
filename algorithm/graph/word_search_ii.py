@@ -37,7 +37,7 @@ class Solution:
         root = TrieNode()
         for w in words: root.insert(w)
 
-        def dfs(r, c, node):
+        def dfs(r: int, c: int, node: TrieNode):
             if r < 0 or r > m - 1 or c < 0 or c > n - 1: return
             tmp = board[r][c]
             if tmp not in node.next or tmp == "#": return

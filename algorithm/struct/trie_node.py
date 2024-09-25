@@ -7,10 +7,13 @@ assumptions
 
 
 class TrieNode:
+    __slots__ = "is_word", "word", "next", "cnt"
+
     def __init__(self):
         self.is_word = False
         self.word = None
-        self.next = {}  # note used dict, not array of links like in java
+        self.next = dict()  # note used dict, not array of links like in java
+        self.cnt = 0
 
     def insert(self, word: str) -> None:
         cur = self
@@ -18,5 +21,6 @@ class TrieNode:
             if c not in cur.next:
                 cur.next[c] = TrieNode()
             cur = cur.next[c]
+            cur.cnt += 1
         cur.is_word = True  # indentation important cannot be in for loop
         cur.word = word
