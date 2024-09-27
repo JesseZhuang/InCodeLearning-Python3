@@ -23,7 +23,7 @@ class Manacher:
             if i + p[i] > right:
                 center = i
                 right = i + p[i]
-            if i - p[i] == 1: self.mppl = max(self.mppl, p[i])
+            if i - (p[i] + 1) == 0: self.mppl = max(self.mppl, p[i])
 
     def cntPalindromeSubstrings(self) -> int:
         res = 0

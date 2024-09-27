@@ -24,3 +24,11 @@ class TrieNode:
             cur.cnt += 1
         cur.is_word = True  # indentation important cannot be in for loop
         cur.word = word
+
+    def lcpLen(self, w: str) -> int:
+        res, cur = 0, self
+        for c in w:
+            if c not in cur.next: break
+            res += 1
+            cur = cur.next[c]
+        return res
