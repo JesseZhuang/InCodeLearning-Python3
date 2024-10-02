@@ -14,7 +14,7 @@ class Solution:
                 if prev_op == '*':
                     last *= cur
                 elif prev_op == '/':
-                    last = trunc(last / cur)
+                    last = trunc(last / cur)  # important, 14-3/2 exp 13, with // 12
                 else:
                     res += last
                     last = cur if prev_op == '+' else -cur
