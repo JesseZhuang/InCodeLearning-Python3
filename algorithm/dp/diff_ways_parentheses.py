@@ -22,7 +22,7 @@ class Solution1:
 
         return self.dp[0][n - 1]
 
-    def _init_base_cases(self):
+    def _init_base_cases(self) -> None:
         e, dp = self.e, self.dp
         # Handle base cases: single digits and two-digit numbers
         for i, char in enumerate(e):
@@ -36,7 +36,7 @@ class Solution1:
                 # Single digit case
                 dp[i][i].append(dig1)
 
-    def _process_subexpression(self, start: int, end: int):
+    def _process_subexpression(self, start: int, end: int) -> None:
         e, dp = self.e, self.dp
         for split in range(start, end + 1):
             if e[split].isdigit(): continue
@@ -44,7 +44,7 @@ class Solution1:
             r_res = dp[split + 1][end]
             self._compute_results(e[split], l_res, r_res, dp[start][end])
 
-    def _compute_results(self, op: str, l_res: List[int], r_res: List[int], res: List[int]):
+    def _compute_results(self, op: str, l_res: List[int], r_res: List[int], res: List[int]) -> None:
         for lv in l_res:
             for rv in r_res:
                 if op == "+":
@@ -55,7 +55,7 @@ class Solution1:
                     res.append(lv * rv)
 
 
-class Solution:
+class Solution2:
     """42ms, 16.89mb"""
 
     def diffWaysToCompute(self, expression: str) -> List[int]:
