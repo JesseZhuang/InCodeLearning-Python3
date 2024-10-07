@@ -16,10 +16,14 @@ class TestBinarySearch(unittest.TestCase):
         self.assertEqual(5, bisect_left(self.__class__.TUPLE1, 5))
         """-2 not in list, should be inserted at index 0"""
         self.assertEqual(0, bisect_left(self.__class__.TUPLE1, -2))
+        """7 not in list, should be inserted at index 7"""
+        self.assertEqual(6, bisect_left(self.__class__.TUPLE1, 7))
 
     def test_bisect_right_not_found(self):
         """7 not in list, should be inserted at index 6"""
         self.assertEqual(6, bisect_right(self.__class__.TUPLE1, 7))
+        """5 not in list, should be inserted at index 5"""
+        self.assertEqual(5, bisect_right(self.__class__.TUPLE1, 5))
 
     def test_bisect_left_existing(self):
         """4 in list, new 4 should be inserted at index 4 on left of existing 4"""
