@@ -1,4 +1,5 @@
 """leet code 3312, weekly 418 Q4"""
+from bisect import bisect_right
 from typing import List
 
 

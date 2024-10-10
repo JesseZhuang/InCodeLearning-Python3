@@ -40,7 +40,7 @@ class Solution2:
     def minReverseOperations(self, n: int, p: int, banned: List[int], k: int) -> List[int]:
         res = [-1] * n
         for node in banned: res[node] = -2  # to speed up iterations
-        q = [p]
+        q = deque([p])
         depth = 0
         res[p] = depth
         step = k - 1
@@ -49,12 +49,13 @@ class Solution2:
 
         while q:
             depth += 1
-            new_q = []
-            for cur in q:
+            size = len(q)
+            for i in range(size):
+                cur = q.popleft()
                 lo = max(cur - step, 0)
                 hi = min(cur, n - k)  # Inclusive
-                lo = 2 * lo + step - cur
-                hi = 2 * hi + step - cur  # Inclusive
+                lo = 2 * lo + k - 1 - cur
+                hi = 2 * hi + k - 1 - cur  # Inclusive
                 # set next_nei_s[nei] to hi + 2 for every visited nei.
                 post_hi = hi + 2
                 nei = lo
@@ -62,11 +63,9 @@ class Solution2:
                     next_nei = next_nei_s[nei]
                     next_nei_s[nei] = post_hi
                     if res[nei] == -1:
-                        new_q.append(nei)
+                        q.append(nei)
                         res[nei] = depth
                     nei = next_nei
-            q = new_q
         # Mark all banned positions as -1 (see above).
-        for i in range(n):
-            if res[i] == -2: res[i] = -1
+        for node in banned: res[node] = -1
         return res
