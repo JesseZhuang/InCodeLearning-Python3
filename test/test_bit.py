@@ -7,7 +7,7 @@ class TestBitTree(unittest.TestCase):
     def setUp(self):
         self.tbt = BITtree([2, 1, 1, 2, 5])
 
-    def test_getsum(self):
+    def test_get_sum(self):
         self.assertEqual(2, self.tbt.getSum(0))
         self.assertEqual(3, self.tbt.getSum(1))
         self.assertEqual(11, self.tbt.getSum(4))
