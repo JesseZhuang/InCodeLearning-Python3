@@ -53,21 +53,133 @@ A transfer expires at the beginning of the next millisecond after the expiration
 • Returns "false" if a transfer with transferId does not exist, was already accepted, or has expired.
 • Returns "false" if the given accountId was not the target account for the transfer.
 
-- design deposit system, support create account, deposit and transfer
-- support top sender, return top n spenders, transfer A->B is considered spending for A
-- design delay transfer operation, make sure the account balance is enough to transfer
+Variants:
+- Level 3: schedule payment, cancel payment
 - support payment, user get cashback after 24 hours of spending
-- merge two accounts, need to merge accounts in the transfer system too
+- level 4: merge two accounts, need to merge accounts in the transfer system too
+- Level 4: merge account, get the history balance of the specified account at a given timeAt
 - get balance, need to support timestamp
 """
+from typing import Dict
+
+from sortedcontainers import SortedList
+
+MILLISECONDS_IN_1_DAY = 86400000
+FALSE = "false"
+TRUE = "true"
 
 
 class Account:
 
-    def __init__(self, timestamp: str, account_id: str):
-        self.timestamp = int(timestamp)
-        self.account_id = account_id
+    def __init__(self, ts: int, acct_id: str):
+        self.ts = ts
+        self.acct_id = acct_id
+        self.balance: int = 0
+        self.tr_v: int = 0
+        self.log: SortedList[BalLog] = SortedList(key=lambda x: x.ts)
+        self.log.add(BalLog(ts, self, 0, "create", 0))
+
+    def pay(self, ts: int, amount: int):
+        if self.balance < amount:
+            return ""
+        self.balance -= amount
+        self.tr_v += amount
+        self.log.add(BalLog(ts, self, amount, "pay", self.balance))
+        return f"{self.balance}"
+
+    def deposit(self, ts: int, amount: int):
+        self.balance += amount
+        self.tr_v += amount
+        self.log.add(BalLog(ts, self, amount, "deposit", self.balance))
+        return f"{self.balance}"
+
+
+class Transfer:
+    def __init__(self, ts: int, src: Account, target: Account, amount: int):
+        self.ts = ts
+        self.src = src
+        self.target = target
+        self.amount = amount
+
+
+class BalLog:
+    def __init__(self, ts: int, acct: Account, amount: int, typ: str, bal: int):
+        self.ts = ts
+        self.acct = acct
+        self.amount = amount  # + for deposit, - for pay
+        self.typ = typ
+        self.bal = bal
+
+
+class Bank:
+    def __init__(self):
+        self.accts: Dict[str, Account] = dict()  # id->acct
+        self.xfer_id: int = 1
+        self.p_xfers: Dict[int, Transfer] = dict()  # pending xfers
+        self.c_xfers: Dict[int, Transfer] = dict()  # completed
+
+    def create_acct(self, ts: str, acct_id: str) -> str:
+        if acct_id in self.accts: return FALSE
+        self.accts[acct_id] = Account(int(ts), acct_id)
+        return TRUE
+
+    def deposit(self, ts: str, acct_id: str, amount: str) -> str:
+        if acct_id not in self.accts: return ""
+        return f"{self.accts[acct_id].deposit(int(ts), int(amount))}"
+
+    def pay(self, ts: str, acct_id: str, amount: str) -> str:
+        if acct_id not in self.accts: return ""
+        return f"{self.accts[acct_id].pay(int(ts), int(amount))}"
+
+    def top(self, ts: str, n: str) -> str:
+        accts = list(self.accts.values())
+        accts.sort(key=lambda x: x.tr_v, reverse=True)
+        return ", ".join([f"{a.acct_id}({a.tr_v})" for a in accts[:int(n)]])
+
+    def xfer(self, ts: str, src_acct_id: str, target_acct_id: str, amount: str) -> str:
+        if src_acct_id == target_acct_id or src_acct_id not in self.accts: return ""
+        src = self.accts[src_acct_id]
+        xfer = Transfer(int(ts), self.accts[src_acct_id],
+                        self.accts[target_acct_id], int(amount))
+        if src.balance < xfer.amount: return ""
+        xfer_id_str = f"transfer{self.xfer_id}"
+        self.p_xfers[self.xfer_id] = xfer
+        self.xfer_id += 1
+        return xfer_id_str
+
+    def ac_xfer(self, ts: str, acct_id: str, xfer_id: str) -> str:
+        xfer_id = int(xfer_id[len("transfer"):])
+        ts = int(ts)
+        if xfer_id not in self.p_xfers: return FALSE
+        xfer = self.p_xfers[xfer_id]
+        if xfer.target.acct_id != acct_id: return FALSE
+        if ts - xfer.ts > MILLISECONDS_IN_1_DAY:
+            del self.p_xfers[xfer_id]
+            return FALSE
+        xfer.src.pay(ts, xfer.amount)
+        xfer.target.deposit(ts, xfer.amount)
+        self.c_xfers[xfer_id] = xfer
+        del self.p_xfers[xfer_id]
+        return TRUE
 
 
 def solution(queries):
-    pass
+    bank = Bank()
+    res = []
+    for q in queries:
+        match (q[0]):
+            case "CREATE_ACCOUNT":
+                res.append(bank.create_acct(q[1], q[2]))
+            case "DEPOSIT":
+                res.append(bank.deposit(q[1], q[2], q[3]))
+            case "PAY":
+                res.append(bank.pay(q[1], q[2], q[3]))
+            case "TOP_ACTIVITY":
+                res.append(bank.top(q[1], q[2]))
+            case "TRANSFER":
+                res.append(bank.xfer(q[1], q[2], q[3], q[4]))
+            case "ACCEPT_TRANSFER":
+                res.append(bank.ac_xfer(q[1], q[2], q[3]))
+            case _:
+                res.append("unsupported")
+    return res

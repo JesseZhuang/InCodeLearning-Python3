@@ -1,4 +1,4 @@
-"""biweeky 141 Q1 and Q2"""
+"""biweekly 141, Q1 and Q2"""
 from typing import List
 
 
