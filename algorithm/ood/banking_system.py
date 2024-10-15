@@ -53,14 +53,31 @@ A transfer expires at the beginning of the next millisecond after the expiration
 • Returns "false" if a transfer with transferId does not exist, was already accepted, or has expired.
 • Returns "false" if the given accountId was not the target account for the transfer.
 
+Level 3 （Variant)
+The system should allow scheduling payments and checking the status of scheduled payments.
+• Optional<String> schedulePaymentint timestamp, String accountId, int amount, int delay) - should schedule a payment
+ which will be performed at timestamp + delay . Returns a string with a unique identifier for the scheduled payment
+ in the following format: "payment [ordinal number of the scheduled payment across all accounts] - e.g., "paymenti",
+ "payment2", etc. If accountId doesn't exist, should return Optional. empty. The payment is skipped if the specified
+  account has insufficient funds when the payment is performed. Additional conditions:
+• Successful payments should be considered outgoing transactions and included when ranking accounts using the
+ operation.
+• Scheduled payments should be processed before any other transactions at the given timestamp.
+• If an account needs to perform several scheduled payments simultaneously, they should be processed in order of
+ creation - e.g., "payment1" should be processed before "payment2"
+• boolean cancelPayment(int timestamp, String accountId, String paymentId) - should cancel the scheduled payment
+with paymentId. Returns true if the scheduled payment is successfully canceled. If paymentId does not exist or
+was already canceled, or if accountId is different from the source account for the scheduled payment, returns false.
+ Note that scheduled payments must be performed before any cancelPayment operations at the given timestamp.
+
 Variants:
 - Level 3: schedule payment, cancel payment
 - support payment, user get cashback after 24 hours of spending
-- level 4: merge two accounts, need to merge accounts in the transfer system too
-- Level 4: merge account, get the history balance of the specified account at a given timeAt
-- get balance, need to support timestamp
+- level 4: merge two accounts, need to merge accounts in the transfer system too. The banking system should support
+ merging two accounts while retaining both accounts' balance and transaction histories.
+- get balance, need to support timestamp, get the history balance of the specified account at a given timeAt
 """
-from typing import Dict
+from typing import Dict, Type, Self
 
 from sortedcontainers import SortedList
 
@@ -93,6 +110,19 @@ class Account:
         self.log.add(BalLog(ts, self, amount, "deposit", self.balance))
         return f"{self.balance}"
 
+    def merge(self, ts: int, acct: Type[Self]):
+        self.balance += acct.balance
+        self.tr_v += acct.tr_v
+        self.log.update(acct.log)
+        self.log.add(BalLog(ts, self, acct.balance, "merge", self.balance))
+        return TRUE
+
+    def balance(self, ts: int) -> int:
+        """get balance in any timestamp"""
+        id = self.log.bisect_right(BalLog(ts, self, 0, "balance", self.balance)) - 1
+        if id < 0: return -1  # before the account was created
+        return self.log[id].balance
+
 
 class Transfer:
     def __init__(self, ts: int, src: Account, target: Account, amount: int):
@@ -114,8 +144,9 @@ class BalLog:
 class Bank:
     def __init__(self):
         self.accts: Dict[str, Account] = dict()  # id->acct
+        self.c_accts: Dict[str, Account] = dict()  # closed accts
         self.xfer_id: int = 1
-        self.p_xfers: Dict[int, Transfer] = dict()  # pending xfers
+        self.p_xfers: Dict[int, Transfer] = dict()  # pending xfers xfer_id:xfer
         self.c_xfers: Dict[int, Transfer] = dict()  # completed
 
     def create_acct(self, ts: str, acct_id: str) -> str:
@@ -161,6 +192,20 @@ class Bank:
         self.c_xfers[xfer_id] = xfer
         del self.p_xfers[xfer_id]
         return TRUE
+
+    def merge(self, ts: str, src_acct_id: str, target_acct_id: str) -> str:
+        if src_acct_id not in self.accts or target_acct_id not in self.accts:
+            return FALSE
+        src, target = self.accts[src_acct_id], self.accts[target_acct_id]
+        del self.accts[src_acct_id]
+        self.c_accts[src_acct_id] = src
+        for xfer_id, xfer in self.p_xfers.copy().items():
+            if xfer.src.acct_id == src_acct_id:
+                if xfer.target.acct_id == target_acct_id:  # target is the account to merge into
+                    del self.p_xfers[xfer_id]  # no longer need to transfer or add to completed transfers
+                else:
+                    self.c_xfers[xfer_id].src = target  # transfer need to start from the new merged account
+        return src.merge(int(ts), target)  # -1 or total balance
 
 
 def solution(queries):
