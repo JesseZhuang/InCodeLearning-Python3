@@ -20,9 +20,7 @@ class Solution:
             res.append(u)
             for v in edges[u]:
                 indeg[v] -= 1
-                if indeg[v] == 0:
-                    q.append(v)
+                if indeg[v] == 0: q.append(v)
 
-        if len(res) != numCourses:
-            res = list()
+        if len(res) != numCourses: res = list()
         return res

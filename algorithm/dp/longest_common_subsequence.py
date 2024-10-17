@@ -13,10 +13,11 @@ def longestCommonSubsequenceDP(self, text1: str, text2: str) -> int:
         return self.longestCommonSubsequence(text2, text1)
     dp = [0] * (n + 1)
     for char1 in text1:
-        prevRow, prevRowPrevCol = 0, 0
+        pr, prpc = 0, 0  # prev row, prev row prev col
         for j, char2 in enumerate(text2):
-            prevRow, prevRowPrevCol = dp[j + 1], prevRow
-            dp[j + 1] = prevRowPrevCol + 1 if char1 == char2 else max(dp[j], prevRow)
+            prpc = pr
+            pr = dp[j + 1]
+            dp[j + 1] = prpc + 1 if char1 == char2 else max(dp[j], pr)
     return dp[-1]
 
 
