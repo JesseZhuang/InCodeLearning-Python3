@@ -11,7 +11,8 @@ class TestCloudStorage(TestCase):
             ["GET_FILE_SIZE", "/dir1/dir2/file.txt"],
             ["DELETE_FILE", "/non-existing.file"],
             ["DELETE_FILE", "/dir1/dir2/file.txt"],
-            ["GET_FILE_SIZE", "/not-existing.file"]
+            ["GET_FILE_SIZE", "/not-existing.file"],
+            ["GET_FILE_SIZE", "/dir1/dir2/file.txt"],
         ]
         exp = [
             "true",  # adds file
@@ -19,7 +20,8 @@ class TestCloudStorage(TestCase):
             "10",
             "",  # file not found
             "10",
-            ""
+            "",
+            "",
         ]
         self.assertEqual(cloud_storage.solution(queries), exp)
 
@@ -27,10 +29,10 @@ class TestCloudStorage(TestCase):
         queries = [
             ["ADD_FILE", "/dir/file1.txt", "5"],
             ["ADD_FILE", "/dir/file2", "20"],
-            ["ADD_FILE", "/dir/deeper /file3.mov", "9"],
+            ["ADD_FILE", "/dir/deeper/file3.mov", "9"],
             ["GET_N_LARGEST", "/dir", "2"],
             ["GET_N_LARGEST", "/dir/file", "3"],
-            ["GET_N_LARGEST", "/another_dir", "file.txt"],
+            ["GET_N_LARGEST", "/another_dir", "5"],
             ["ADD_FILE", "/big_file.mp4", "20"],
             ["GET_N_LARGEST", "/", "2"]
         ]
@@ -44,6 +46,7 @@ class TestCloudStorage(TestCase):
             "true",
             "/big_file.mp4(20), /dir/file2(20)"
         ]
+        self.assertEqual(cloud_storage.solution(queries), exp)
 
     def test_level3(self):
         queries = [
@@ -70,3 +73,35 @@ class TestCloudStorage(TestCase):
             "60",
             "70",
         ]
+        self.assertEqual(cloud_storage.solution(queries), exp)
+
+    def test_level4(self):
+        queries = [
+            ["ADD_USER", "user", "100"],
+            ["ADD_FILE_BY", "user", "/dir/file1", "50"],
+            ["ADD_FILE_BY", "user", "/file2.txt", "30"],
+            ["RESTORE_USER", "user"],
+            ["ADD_FILE_BY", "user", "/file3.mp4", "60"],
+            ["ADD_FILE_BY", "user", "/file4.txt", "10"],
+            ["BACKUP_USER", "user"],
+            ["DELETE_FILE", "/file3.mp4"],
+            ["DELETE_FILE", "/file4.txt"],
+            ["ADD_FILE", "/file3.mp4", "140"],
+            ["ADD_FILE_BY", "user", "/dir/file5.new", "20"],
+            ["RESTORE_USER", "user"],
+        ]
+        exp = [
+            "true",
+            "50",
+            "20",
+            "0",  # remove all "user"'s files
+            "40",
+            "30",
+            "2",  # back up all "user"'s files
+            "60",
+            "10",
+            "true",
+            "80",
+            "1",  # restores "/file4.txt" and deletes "/dir/file5.new"
+        ]
+        self.assertEqual(cloud_storage.solution(queries), exp)
