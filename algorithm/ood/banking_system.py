@@ -132,12 +132,15 @@ identifiers by replacing account_id_2 with account_id_1
 should be the sum of all money transferred and/or withdrawn in both accounts.
 • account_id_2 should be removed from the system after the merge.
 
-got_balance(self, timestamp: int, account_id: str, time_at: int) -> int | None
+get_balance(self, timestamp: int, account_id: str, time_at: int) -> int | None
  - Should return the total amount of money in the account account_id at the given timestamp tine_at.
  If the specified account did not exist at a given time time_at, returns None
-• If queries have been processed at timestamp tine_at, get_balance must reflect the account balance after the query
+• If queries have been processed at timestamp time_at, get_balance must reflect the account balance after the query
 has been processed.
 • If the account was merged into another account, the merged account should inherit its balance history.
+
+Note: Not clear what to return for a get_balance query of a deleted account in the merge. This version returns
+the balance by tracing to the target account in the merge.
 
 Variants:
 - Level 3: schedule payment, cancel payment
@@ -146,10 +149,11 @@ Variants:
  merging two accounts while retaining both accounts' balance and transaction histories.
 - get balance, need to support timestamp, get the history balance of the specified account at a given timeAt
 """
-from collections import deque
+import enum
+from bisect import bisect_right
 from typing import Dict, Type, Self
 
-from sortedcontainers import SortedList, SortedSet
+from sortedcontainers import SortedList, SortedDict
 
 MILLISECONDS_IN_1_DAY = 86400000
 FALSE = "false"
@@ -164,9 +168,8 @@ class Account:
         self.balance: int = 0
         self.activity: int = 0
         self.sent: int = 0
-        self.log: SortedList[BalLog] = SortedList(key=lambda x: x.ts)
-        self.log.add(BalLog(ts, self, 0, "create", 0))
-        self.cash_back: deque[(int, int)] = deque()  # timestamp, amount
+        self.log: SortedList[BalLog] = SortedList(key=lambda x: x.ts)  # or SortedDict(ts, balance)
+        self.log.add(BalLog(ts, self, 0, BalLogType.CREATE, 0))
 
     def pay_v2(self, ts: int, amount: int) -> bool:
         if self.balance < amount:
@@ -174,7 +177,7 @@ class Account:
         self.balance -= amount
         self.activity += amount
         self.sent += amount
-        self.log.add(BalLog(ts, self, amount, "pay_v2", self.balance))
+        self.log.add(BalLog(ts, self, amount, BalLogType.PAY_V2, self.balance))
         return True
 
     def pay(self, ts: int, amount: int):
@@ -183,28 +186,29 @@ class Account:
         self.balance -= amount
         self.activity += amount
         self.sent += amount
-        self.log.add(BalLog(ts, self, amount, "pay", self.balance))
+        self.log.add(BalLog(ts, self, amount, BalLogType.PAY, self.balance))
         return f"{self.balance}"
 
     def deposit(self, ts: int, amount: int):
         self.balance += amount
         self.activity += amount
-        self.log.add(BalLog(ts, self, amount, "deposit", self.balance))
+        self.log.add(BalLog(ts, self, amount, BalLogType.DEPOSIT, self.balance))
         return f"{self.balance}"
 
     def merge(self, ts: int, acct: Type[Self]):
         self.balance += acct.balance
         self.activity += acct.activity
+        self.sent += acct.sent
         self.log.update(acct.log)
-        self.log.add(BalLog(ts, self, acct.balance, "merge", self.balance))
-        return TRUE
+        self.log.add(BalLog(ts, self, acct.balance, BalLogType.MERGE_T, self.balance))
+        return True
 
-    def balance(self, ts: int) -> int:
+    def get_balance(self, ts: int) -> int | None:
         """get balance in any timestamp"""
-        id = self.log.bisect_right(BalLog(ts, self, 0, "balance", self.balance)) - 1
+        id = bisect_right(self.log, ts, key=lambda log: log.ts) - 1
         if id < 0:
-            return -1  # before the account was created
-        return self.log[id].balance
+            return None  # before the account was created
+        return self.log[id].bal
 
 
 class Payment:
@@ -223,8 +227,17 @@ class Transfer:
         self.amount = amount
 
 
+class BalLogType(enum.Enum):
+    CREATE = "create"
+    PAY = "pay"
+    PAY_V2 = "pay_v2"
+    DEPOSIT = "deposit"
+    MERGE_T = "merge_target"
+    MERGE_S = "merge_src"
+
+
 class BalLog:
-    def __init__(self, ts: int, acct: Account, amount: int, typ: str, bal: int):
+    def __init__(self, ts: int, acct: Account, amount: int, typ: BalLogType, bal: int):
         self.ts = ts
         self.acct = acct
         self.amount = amount
@@ -234,15 +247,15 @@ class BalLog:
 
 class Bank:
     def __init__(self):
-        self.accts: Dict[str, Account] = dict()  # id->acct
-        self.c_accts: Dict[str, Account] = dict()  # closed accts
+        self.accts: Dict[str, Account] = dict()  # id->account
+        self.m_accts: Dict[str, Account] = dict()  # accounts merged into another acct, id -> account
         self.xfer_id: int = 1
         self.p_xfers: dict[int, Transfer] = dict()  # pending xfers xfer_id:xfer
         self.c_xfers: Dict[int, Transfer] = dict()  # completed
         self.payment_id: int = 1
-        self.payments: SortedSet[Payment] = (
-            SortedSet(key=lambda p: p.payment_id))  # queue of payments to process cashback
-        self.c_payments: dict[str, Payment] = dict()
+        self.payments: SortedDict[str, Payment] = SortedDict()  # queue of payments to process cashback
+        self.c_payments: dict[str, Payment] = dict()  # payment_id -> payment
+        self.merges: dict[Account, Account] = dict()  # src -> target
 
     def create_acct(self, ts: str, acct_id: str) -> str:
         if acct_id in self.accts:
@@ -261,10 +274,10 @@ class Bank:
         can_pay = self.accts[account_id].pay_v2(ts, amount)
         if not can_pay:
             return None
-        p_id = self.payment_id
-        res = f"payment{p_id}"
+        p_id_int = self.payment_id
+        res = f"payment{p_id_int}"
         self.payment_id += 1
-        self.payments.add(Payment(ts, self.accts[account_id], res, amount))
+        self.payments[res] = Payment(ts, self.accts[account_id], res, amount)
         return res
 
     def get_payment_status(self, ts: int, acct_id: str, payment_id: str) -> str | None:
@@ -272,8 +285,9 @@ class Bank:
             return None
         if payment_id in self.c_payments and acct_id == self.c_payments[payment_id].acct.acct_id:
             return "CASHBACK_RECEIVED"
-        for p in self.payments:
-            if payment_id == p.payment_id and p.acct.acct_id == acct_id:
+        if payment_id in self.payments:
+            p = self.payments[payment_id]
+            if p.acct.acct_id == acct_id:
                 return "IN_PROGRESS"
         return None
 
@@ -291,6 +305,17 @@ class Bank:
         accts = list(self.accts.values())
         accts.sort(key=lambda x: x.sent, reverse=True)
         return ", ".join([f"{a.acct_id}({a.sent})" for a in accts[:int(n)]])
+
+    def xfer_v2(self, ts: int, src_acct_id: str, target_acct_id: str, amount: int) -> int | None:
+        if src_acct_id == target_acct_id or src_acct_id not in self.accts or target_acct_id not in self.accts:
+            return None
+        src = self.accts[src_acct_id]
+        if src.balance < amount:
+            return None
+        src, target = self.accts[src_acct_id], self.accts[target_acct_id]
+        src.pay_v2(ts, amount)
+        target.deposit(ts, amount)
+        return src.balance
 
     def xfer(self, ts: str, src_acct_id: str, target_acct_id: str, amount: str) -> str:
         if src_acct_id == target_acct_id or src_acct_id not in self.accts:
@@ -324,24 +349,41 @@ class Bank:
 
     def cash_back(self, ts: str) -> None:
         pays = self.payments
-        while pays and pays[0].ts + MILLISECONDS_IN_1_DAY <= int(ts):
-            p = pays.pop(0)
+        while pays and pays.peekitem(0)[1].ts + MILLISECONDS_IN_1_DAY <= int(ts):
+            p = pays.popitem(0)[1]
             self.deposit(ts, p.acct.acct_id, str(round(p.amount * 0.02)))
             self.c_payments[p.payment_id] = p
 
-    def merge(self, ts: str, src_acct_id: str, target_acct_id: str) -> str:
-        if src_acct_id not in self.accts or target_acct_id not in self.accts:
-            return FALSE
-        src, target = self.accts[src_acct_id], self.accts[target_acct_id]
-        del self.accts[src_acct_id]
-        self.c_accts[src_acct_id] = src
+    def merge_accounts(self, ts: int, acct_id1: str, acct_id2: str) -> bool:
+        if acct_id2 not in self.accts or acct_id1 not in self.accts or acct_id1 == acct_id2:
+            return False
+        src, target = self.accts[acct_id2], self.accts[acct_id1]
+        del self.accts[acct_id2]
+        self.merges[src] = target
+        self.m_accts[acct_id2] = src
+        src.log.add(BalLog(ts, src, -src.balance, BalLogType.MERGE_S, 0))
+        for p in self.payments.values():
+            if p.acct.acct_id == acct_id2:
+                p.acct = target  # modify payment
         for xfer_id, xfer in self.p_xfers.copy().items():
-            if xfer.src.acct_id == src_acct_id:
-                if xfer.target.acct_id == target_acct_id:  # target is the account to merge into
+            if xfer.src.acct_id == acct_id2:
+                if xfer.target.acct_id == acct_id1:  # target is the account to merge into
                     del self.p_xfers[xfer_id]  # no longer need to transfer or add to completed transfers
                 else:
                     self.c_xfers[xfer_id].src = target  # transfer need to start from the new merged account
-        return src.merge(int(ts), target)  # -1 or total balance
+        return target.merge(int(ts), src)
+
+    def get_balance(self, ts: int, account_id: str, time_at: int) -> int | None:
+        if account_id in self.m_accts:  # account already merged
+            acct = self.m_accts[account_id]
+            if time_at > acct.log[-1].ts or time_at < acct.log[0].ts:  # after merge or before create
+                return None
+            # trace to the merged account
+            merge_target = self.merges[acct]
+            return self.get_balance(ts, merge_target.acct_id, time_at)
+        if account_id in self.accts:
+            return self.accts[account_id].get_balance(time_at)
+        return None
 
 
 def solution(queries):
@@ -366,8 +408,14 @@ def solution(queries):
                 res.append(bank.top_senders(q[1], q[2]))
             case "TRANSFER":
                 res.append(bank.xfer(q[1], q[2], q[3], q[4]))
+            case "TRANSFER_V2":
+                res.append(bank.xfer_v2(q[1], q[2], q[3], q[4]))
             case "ACCEPT_TRANSFER":
                 res.append(bank.ac_xfer(q[1], q[2], q[3]))
+            case "MERGE_ACCOUNTS":
+                res.append(bank.merge_accounts(q[1], q[2], q[3]))
+            case "GET_BALANCE":
+                res.append(bank.get_balance(q[1], q[2], q[3]))
             case _:
                 res.append("unsupported")
     return res
