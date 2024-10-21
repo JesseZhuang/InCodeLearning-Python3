@@ -90,6 +90,7 @@ Assumption: delete_at, set_at, set_at_with_ttl, .etc. should not affect existing
 
 """
 import copy
+from collections import defaultdict
 
 from sortedcontainers import SortedDict
 
@@ -106,37 +107,28 @@ class Value:
 
 
 class Record:
-    def __init__(self, key: str):
-        self.id: str = key  # record key
+    def __init__(self):
         self.data: SortedDict[str, Value] = SortedDict()  # field->value
 
 
 class InMemoryDB:
 
     def __init__(self):
-        self.records: dict[str, Record] = dict()
+        self.records: defaultdict[str, Record] = defaultdict(lambda: Record())
         self.backups: SortedDict[int, dict[str, Record]] = SortedDict()  # timestamp -> records
 
     # unclear what happens if set history after backup, for example, set_at (... at timestamp 4) after backup at 5
     # maybe guaranteed timestamp should always increase
     def set_at(self, key: str, field: str, value: int, timestampToSet: int) -> None:
-        if key not in self.records:
-            self.records[key] = Record(key)
         self.records[key].data[field] = Value(value, timestampToSet)  # no ttl
 
     def set(self, timestamp: int, key: str, field: str, value: int) -> None:
-        if key not in self.records:
-            self.records[key] = Record(key)
         self.records[key].data[field] = Value(value, timestamp)
 
     def set_with_ttl(self, timestamp: int, key: str, field: str, value: int, ttl: int) -> None:
-        if key not in self.records:
-            self.records[key] = Record(key)
         self.records[key].data[field] = Value(value, timestamp, ttl)
 
     def set_at_with_ttl(self, key: str, field: str, value: int, timestampToSet: int, ttl: int) -> None:
-        if key not in self.records:
-            self.records[key] = Record(key)
         self.records[key].data[field] = Value(value, timestampToSet, ttl)
 
     def compare_and_set(self, timestamp: int, key: str, field: str, expected_value: int, new_value: int) -> bool:
