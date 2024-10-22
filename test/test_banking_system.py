@@ -127,15 +127,15 @@ class TestBankingSystem(unittest.TestCase):
         self.assertEqual(expected, solution(queries))
 
     def test_level3c(self):
-        queries2 = [
-            ["CREATE ACCOUNT", "1", "account1"],
+        queries = [
+            ["CREATE_ACCOUNT", "1", "account1"],
             ["CREATE_ACCOUNT", "2", "account2"],
-            ["CREATE _ACCOUNT", "3", "account3"],
+            ["CREATE_ACCOUNT", "3", "account3"],
             ["DEPOSIT", "4", "account1", "1000"],
             ["DEPOSIT", "5", "account2", "1000"],
             ["DEPOSIT", "6", "account3", "1000"],
-            ["SCHEDULE_PAYMENT", "7", "account1", "300", "10"],
-            ["SCHEDULE_PAYMENT", "8", "account2", "400", "10"],
+            ["SCHEDULE_PAYMENT", 7, "account1", 300, 10],
+            ["SCHEDULE_PAYMENT", 8, "account2", 400, 10],
             ["TOP_SPENDERS", "15", "3"],
             ["TOP_SPENDERS", "20", "3"],
         ]
@@ -151,14 +151,15 @@ class TestBankingSystem(unittest.TestCase):
             "account1(0), account2(0), account3(0)",  # none has any outgoing transactions
             "account2(400), account1(300), account3(0)"
         ]
-        queries3 = [
+        self.assertEqual(expected, solution(queries))
+        queries = [
             ["CREATE_ACCOUNT", "1", "account1"],
             ["CREATE_ACCOUNT", "2", "account2"],
             ["DEPOSIT", "3", "account1", "2000"],
             ["DEPOSIT", "4", "account2", "3000"],
-            ["SCHEDULE_PAYMENT", "5", "account1", "50", "10"],
-            ["SCHEDULE_PAYMENT", "6", "account2", "1000", "5"],
-            ["SCHEDULE_PAYMENT", "7", "account1", "3000", "7"],
+            ["SCHEDULE_PAYMENT", 5, "account1", 50, 10],
+            ["SCHEDULE_PAYMENT", 6, "account2", 1000, 5],
+            ["SCHEDULE_PAYMENT", 7, "account1", 3000, 7],
             ["DEPOSIT", "11", "account2", "5"],
             ["CANCEL_PAYMENT", "12", "account2", "payment1"],
             ["CANCEL_PAYMENT", "13", "account1", "payment1"],
@@ -174,13 +175,12 @@ class TestBankingSystem(unittest.TestCase):
             "payment2",
             "payment3",
             "2005",
-            "false",
-            "true",
+            False,  # payment1 was for account1 not account2
+            True,
             "2005",
             "2010"
         ]
-        # skip, similar to transfer and pay, delay is variable now
-        pass
+        self.assertEqual(expected, solution(queries))
 
     def test_level4(self):
         queries = [

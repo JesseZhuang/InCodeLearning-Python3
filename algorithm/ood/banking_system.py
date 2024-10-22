@@ -166,9 +166,9 @@ class Account:
         self.ts = ts
         self.acct_id = acct_id
         self.balance: int = 0
-        self.activity: int = 0
+        self.activity: int = 0  # both pay and deposit
         self.sent: int = 0
-        self.log: SortedList[BalLog] = SortedList(key=lambda x: x.ts)  # or SortedDict(ts, balance)
+        self.log: SortedList[BalLog] = SortedList(key=lambda x: x.ts)  # SortedDict(ts, balance) sufficient
         self.log.add(BalLog(ts, self, 0, BalLogType.CREATE, 0))
 
     def pay_v2(self, ts: int, amount: int) -> bool:
@@ -212,11 +212,13 @@ class Account:
 
 
 class Payment:
-    def __init__(self, ts: int, acct: Account, payment_id: str, amount: int):
+    def __init__(self, ts: int, acct: Account, payment_id: str, amount: int, ready: int = 0):
         self.ts = ts
         self.acct = acct
         self.payment_id = payment_id
         self.amount = amount
+        # v3 payment fields below
+        self.ready = ready  # ts+delay
 
 
 class Transfer:
@@ -252,9 +254,12 @@ class Bank:
         self.xfer_id: int = 1
         self.p_xfers: dict[int, Transfer] = dict()  # pending xfers xfer_id:xfer
         self.c_xfers: Dict[int, Transfer] = dict()  # completed
-        self.payment_id: int = 1
+        self.payment_id: int = 0
         self.payments: SortedDict[str, Payment] = SortedDict()  # queue of payments to process cashback
-        self.c_payments: dict[str, Payment] = dict()  # payment_id -> payment
+        self.scheduled_payments: dict[str, Payment] = dict()  # v3, no cash back, schedule with delay
+        # sort first by execution time, then payment_id
+        self.pending_payments: SortedList[Payment] = SortedList(key=lambda x: (x.ready, x.payment_id))
+        self.c_payments: dict[str, Payment] = dict()  # payment_id -> payment, completed payments
         self.merges: dict[Account, Account] = dict()  # src -> target
 
     def create_acct(self, ts: str, acct_id: str) -> str:
@@ -274,9 +279,9 @@ class Bank:
         can_pay = self.accts[account_id].pay_v2(ts, amount)
         if not can_pay:
             return None
+        self.payment_id += 1
         p_id_int = self.payment_id
         res = f"payment{p_id_int}"
-        self.payment_id += 1
         self.payments[res] = Payment(ts, self.accts[account_id], res, amount)
         return res
 
@@ -354,6 +359,46 @@ class Bank:
             self.deposit(ts, p.acct.acct_id, str(round(p.amount * 0.02)))
             self.c_payments[p.payment_id] = p
 
+    # SCHEDULE_PAYMENT < timestamp> < accountId> ‹amount > ‹delay>
+    def schedule_payment(self, timestamp: int, acct_id: str, amount: int, delay: int) -> str | None:
+        if acct_id not in self.accts:
+            return None
+        self.payment_id += 1
+        payment_id_str = f"payment{self.payment_id}"
+        p = Payment(timestamp, self.accts[acct_id], payment_id_str, amount, timestamp + delay)
+        self.scheduled_payments[payment_id_str] = p
+        self.pending_payments.add(p)
+        return payment_id_str
+
+    # CANCEL_PAYMENT < timestamp> <accountId> <paymentId>
+    def cancel_payment(self, timestamp: int, acct_id: str, paymentId: str) -> bool:
+        if acct_id not in self.accts or paymentId in self.c_payments or paymentId not in self.scheduled_payments:
+            return False
+        p = self.scheduled_payments[paymentId]
+        if p.acct.acct_id != acct_id:
+            return False
+        self.c_payments[paymentId] = p
+        self.pending_payments.remove(p)
+        del self.scheduled_payments[paymentId]  # if the value will be used, can use pop instead of del
+        return True
+
+    def process_payment(self, timestamp: int) -> None:
+        timestamp = int(timestamp)
+        dummy = Payment(0, Account(0, "z"), "z", 0, timestamp)
+        idx = self.pending_payments.bisect_right(dummy) - 1
+        if idx < 0:
+            return
+        skipped = []
+        for i in range(0, idx + 1):
+            p = self.pending_payments.pop(0)  # lg n timing
+            if not p.acct.pay_v2(timestamp, p.amount):
+                skipped.append(p)
+                continue
+            del self.scheduled_payments[p.payment_id]
+            self.c_payments[p.payment_id] = p
+
+        self.pending_payments.update(skipped)
+
     def merge_accounts(self, ts: int, acct_id1: str, acct_id2: str) -> bool:
         if acct_id2 not in self.accts or acct_id1 not in self.accts or acct_id1 == acct_id2:
             return False
@@ -391,6 +436,7 @@ def solution(queries):
     res = []
     for q in queries:
         bank.cash_back(q[1])
+        bank.process_payment(q[1])
         match (q[0]):
             case "CREATE_ACCOUNT":
                 res.append(bank.create_acct(q[1], q[2]))
@@ -400,6 +446,10 @@ def solution(queries):
                 res.append(bank.pay(q[1], q[2], q[3]))
             case "PAY_V2":
                 res.append(bank.pay_v2(q[1], q[2], q[3]))
+            case "SCHEDULE_PAYMENT":
+                res.append(bank.schedule_payment(q[1], q[2], q[3], q[4]))
+            case "CANCEL_PAYMENT":
+                res.append(bank.cancel_payment(q[1], q[2], q[3]))
             case "GET_PAYMENT_STATUS":
                 res.append(bank.get_payment_status(q[1], q[2], q[3]))
             case "TOP_ACTIVITY":
