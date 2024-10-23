@@ -24,7 +24,7 @@ class Solution:
 
 s = "a"
 while len(s) < 500:
-    s += ''.join(chr(ord(x) + 1) for x in s)
+    s += ''.join(chr(ord(x) + 1) for x in s)  # 500, not hitting z->a case
 
 
 class Solution2:
