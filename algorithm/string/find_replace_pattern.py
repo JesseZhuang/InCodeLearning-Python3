@@ -9,7 +9,9 @@ class Solution:
         def match(word: str) -> bool:
             llm = dict()
             for w, p in zip(word, pattern):
-                if llm.setdefault(w, p) != p: return False  # return existing value or new value
+                if llm.setdefault(w, p) != p: return False
+                # setdefault() return existing value if key exist, do not change dict
+                # otherwise set with the specified default and returns that default
             return len(set(llm.values())) == len(llm.values())
 
         return list(filter(match, words))
