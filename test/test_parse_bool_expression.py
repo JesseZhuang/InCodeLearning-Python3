@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from algorithm.stack.parse_bool_expression import Solution1, Solution2
+from algorithm.deq.parse_bool_expression import Solution1, Solution2
 
 
 class TestSolution(TestCase):

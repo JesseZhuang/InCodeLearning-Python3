@@ -11,6 +11,7 @@ class Solution1:
         cnt_nums = [[] for _ in range(len(nums) + 1)]
         for num in counts:
             cnt_nums[counts[num]].append(num)
+        # return list(chain.from_iterable(buk))[-k:]
         res, j = [], 0
         for i in range(len(nums), 0, -1):
             for num in cnt_nums[i]:
