@@ -5,14 +5,16 @@ from collections import deque
 
 class Solution:
     def isValid(self, s: str) -> bool:
-        stack = deque()
+        st = deque()
         for c in s:
-            if c == '[':
-                stack.append(']')
-            elif c == '{':
-                stack.append('}')
-            elif c == '(':
-                stack.append(')')
-            elif len(stack) == 0 or c != stack.pop():
-                return False
-        return len(stack) == 0
+            match c:
+                case '(':
+                    st.append(')')
+                case '[':
+                    st.append(']')
+                case '{':
+                    st.append('}')
+                case _:
+                    if not st or st.pop() != c:
+                        return False
+        return len(st) == 0
