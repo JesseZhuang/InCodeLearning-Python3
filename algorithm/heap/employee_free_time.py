@@ -27,10 +27,10 @@ class SolutionLint:
 
     def employee_free_time(self, schedule: List[List[int]]) -> List[Interval]:
         # 81ms, 6.23Mb lint code
-        intervals = []
+        intervals = list()
         for s in schedule:
-            for i in range(len(s) // 2):
-                intervals.append(Interval(s[2 * i], s[2 * i + 1]))
+            for i in range(0, len(s), 2):
+                intervals.append(Interval(s[i], s[i + 1]))
         intervals.sort(key=lambda x: x.start)
         end = intervals[0].end
         res = []
