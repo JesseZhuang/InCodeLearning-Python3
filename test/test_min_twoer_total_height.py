@@ -1,6 +1,6 @@
 import unittest
 
-from algorithm.hash.max_tower_total_height import Solution2
+from algorithm.array.max_tower_total_height import Solution2
 
 
 class TestMinTowerTotalHeight(unittest.TestCase):
