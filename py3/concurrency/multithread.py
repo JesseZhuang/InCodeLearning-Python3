@@ -7,6 +7,8 @@ libraries might overcome this limitation). If you want your application to make 
 the computational resources of multi-core machines, you are advised to use multiprocessing or 
 concurrent.futures.ProcessPoolExecutor. However, threading is still an appropriate model 
 if you want to run multiple I/O-bound tasks simultaneously.
+
+https://stackoverflow.com/questions/3044580/multiprocessing-vs-threading-python
 """
 import os
 import threading

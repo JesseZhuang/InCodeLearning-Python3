@@ -2,7 +2,7 @@ import unittest
 
 # to use both python test.py and python -m unittest
 try:
-    from basics import everything_object
+    from py3.basics import everything_object
 # above works when running python -m unittest from repo base directory
 # or python -m basics.test_everything_object
 except ImportError:

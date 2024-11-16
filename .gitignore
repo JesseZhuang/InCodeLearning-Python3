@@ -6,3 +6,5 @@
 *.log*
 *.swp
 .vscode/
+/data/constants.py
+/data/stock_list.txt
