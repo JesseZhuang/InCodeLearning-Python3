@@ -1,2 +1,3 @@
 sortedcontainers: leetcode
 pandas: csv processing
+pymongo: mongodb

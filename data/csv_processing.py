@@ -28,16 +28,15 @@ def extract_col_to_list_glob(dir: str):
     return list(res)
 
 
-# extract stock tickets from watchlist csv export, keep in Google Drive
-with open('stock_list.txt', 'w') as f:
-    stocks = extract_col_to_list_glob(STOCK_WATCHLIST_PATH)
-    logger.debug(f'write 50 tickers per line')
+def save_watchlist():
+    # extract stock tickets from watchlist csv export, keep in Google Drive
+    with open('stock_list.txt', 'w') as f:
+        stocks = extract_col_to_list_glob(STOCK_WATCHLIST_PATH)
+        logger.debug(f'write 50 tickers per line')
 
+        def chunks(lst, n):
+            for i in range(0, len(lst), n):
+                yield lst[i:i + n]
 
-    def chunks(lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i:i + n]
-
-
-    list_of_lists = chunks(stocks, 50)
-    f.write('\n'.join(','.join(l) for l in list_of_lists))
+        list_of_lists = chunks(stocks, 50)
+        f.write('\n'.join(','.join(l) for l in list_of_lists))
