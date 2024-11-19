@@ -1,4 +1,5 @@
 """leet code 1055, medium, lint code 3652"""
+import math
 
 
 class Solution:
@@ -22,3 +23,14 @@ class Solution:
             if not found: return -1
             res += 1
         return res
+
+
+class Solution2:
+    def shortest_way(self, s: str, tar: str) -> int:
+        if any(c not in s for c in tar):
+            return -1
+        res, n = 0, len(s)
+        for c in tar:
+            while c != s[res % n]:
+                res += 1
+        return math.ceil((res + 1) / n)  # res//n + 1
