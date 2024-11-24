@@ -22,7 +22,7 @@ class MarketCapType(enum.IntEnum):
 @dataclass
 class MarketCap:
     category: MarketCapType
-    cap: int
+    cap: float
 
 
 @dataclass
@@ -37,11 +37,14 @@ class Stock:
     volatility: float
     cap_enum: int
     """use enum value defined above"""
-    cap: int
+    cap: float
     """unit million"""
+    eps: float
+    """earnings per share"""
     rating: float
     """analyst rating"""
     shares: int
+    last: float
     short: float
     """short percentage"""
     created: datetime.date

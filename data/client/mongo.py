@@ -55,6 +55,8 @@ def test_read(mongo_wrapper):
     print(type(apple))
     stock = Stock(**apple)
     print(stock)
+    not_exist = c.find_one({'_id': 'not_exist'})
+    print(not_exist)  # should be None
 
 
 if __name__ == "__main__":
