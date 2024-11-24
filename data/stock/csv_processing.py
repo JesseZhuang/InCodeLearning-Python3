@@ -102,8 +102,8 @@ def construct_stock(r):
         if name in COL_NAMES:
             stock[name] = r[COL_NAMES[name]]
     stock[MARKET_CAP_STR] = r[COL_NAMES[MARKET_CAP_STR]]
-    (pe, volatility, cap_enum, cap, eps, rating, last, short, created) = (
-        'pe', 'volatility', 'cap_enum', 'cap', 'eps', 'rating', 'last', 'short', 'created')
+    (pe, volatility, cap_enum, cap, eps, rating, last, short, created, gain) = (
+        'pe', 'volatility', 'cap_enum', 'cap', 'eps', 'rating', 'last', 'short', 'created', 'gain')
     stock[pe] = float(stock[pe])
     stock[volatility] = p2f(stock[volatility])
     market_cap = get_market_cap(stock[MARKET_CAP_STR])
@@ -115,6 +115,7 @@ def construct_stock(r):
     stock[short] = p2f(stock[short])
     del stock[MARKET_CAP_STR]
     stock[created] = datetime.today()
+    stock[gain] = 0.0
     return Stock(**stock)
 
 
@@ -148,6 +149,9 @@ def save_watchlist_mongo():
         if df[df == '--'].notnull().values.any():
             logger.error(df.loc[:, df[df == '--'].any()])
             raise RuntimeError('-- value')
+        # df[pe] = to_numeric(df[pe])
+        # print(df.sort_values(by=[pe], ascending=True))
+        print(df[pe])
 
         df.apply(lambda row: stocks.append(construct_stock(row)), axis=1)
     logger.info(f'total stocks in watchlist: {len(stocks)}')

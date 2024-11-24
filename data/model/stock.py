@@ -48,3 +48,6 @@ class Stock:
     short: float
     """short percentage"""
     created: datetime.date
+    """date added to watchlist"""
+    gain: float
+    """total gains"""

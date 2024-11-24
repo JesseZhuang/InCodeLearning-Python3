@@ -42,11 +42,10 @@ class Solution2:
         for u, v, w in edges:
             bal[u] -= w
             bal[v] += w
-        # Step 2: Collect non-zero balances only
         non_zero = [b for b in bal.values() if b != 0]
         non_zero.sort(reverse=True)
 
-        # Step 3: Use DFS with backtracking to minimize transactions
+        # Use DFS with backtracking to minimize transactions
         def dfs(start: int) -> int:
             while start < len(non_zero) and non_zero[start] == 0:
                 start += 1
