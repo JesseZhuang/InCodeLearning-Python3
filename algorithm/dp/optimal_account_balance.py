@@ -16,15 +16,15 @@ class Solution1:
         for f, t, amount in edges:
             bal[f] -= amount
             bal[t] += amount
-        non_zero = [b for b in bal.values() if b != 0]
+        non_zero = [b for b in bal.values() if b]
         n = len(non_zero)
-        f = [sys.maxsize] * (1 << n)  # python2 sys.maxint, python3 sys.maxsize, or inf
+        f = [sys.maxsize] * (1 << n)  # python2 sys.maxint, python3 sys.maxsize, inf, or 1<<29
         f[0] = 0
         for i in range(1, 1 << n):
             total = 0  # total balances in this subset
             for j, x in enumerate(non_zero):
                 if i >> j & 1:
-                    total += x
+                    total += x  # bit_cnt += 1 for py < 3.10
             if total == 0:
                 f[i] = i.bit_count() - 1  # bit_count() needs python 3.10
                 j = (i - 1) & i
@@ -35,35 +35,36 @@ class Solution1:
 
 
 class Solution2:
-    def minTransfers(self, transactions: List[List[int]]) -> int:
-        balance_map = defaultdict(int)
-        for transaction in transactions:
-            u, v, amount = transaction
-            balance_map[u] -= amount
-            balance_map[v] += amount
+    """TLE lint code"""
+
+    def minTransfers(self, edges: List[List[int]]) -> int:
+        bal = defaultdict(int)
+        for u, v, w in edges:
+            bal[u] -= w
+            bal[v] += w
         # Step 2: Collect non-zero balances only
-        balances = [balance for balance in balance_map.values() if balance != 0]
-        balances.sort(reverse=True)
+        non_zero = [b for b in bal.values() if b != 0]
+        non_zero.sort(reverse=True)
 
         # Step 3: Use DFS with backtracking to minimize transactions
         def dfs(start: int) -> int:
-            while start < len(balances) and balances[start] == 0:
+            while start < len(non_zero) and non_zero[start] == 0:
                 start += 1
             # Base case: All balances settled
-            if start == len(balances):
+            if start == len(non_zero):
                 return 0
             res = float('inf')
-            # Try to settle balances[start] with each subsequent balance
-            for i in range(start + 1, len(balances)):
-                if balances[i] * balances[start] < 0:  # Opposite signs only
+            # Try to settle balances[start] with subsequent balances
+            for i in range(start + 1, len(non_zero)):
+                if non_zero[i] * non_zero[start] < 0:  # Opposite signs only
                     # Settle balances[start] with balances[i]
-                    balances[i] += balances[start]
+                    non_zero[i] += non_zero[start]
                     # Recur to settle the next balance and count this transaction
                     res = min(res, 1 + dfs(start + 1))
                     # Backtrack to previous state
-                    balances[i] -= balances[start]
+                    non_zero[i] -= non_zero[start]
                     # Optimization: Stop if an exact zero balance is found
-                    if balances[i] + balances[start] == 0:
+                    if non_zero[i] + non_zero[start] == 0:
                         break
             return res
 

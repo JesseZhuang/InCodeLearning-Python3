@@ -6,5 +6,5 @@
 *.log*
 *.swp
 .vscode/
-/data/constants.py
-/data/stock_list.txt
+/data/stock/secrets.py
+/data/stock/stock_list.txt

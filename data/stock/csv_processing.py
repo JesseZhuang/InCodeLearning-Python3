@@ -5,8 +5,9 @@ from datetime import datetime
 
 import pandas as pd
 
-from constants import STOCK_WATCHLIST_PATH, COL_NAMES, MARKET_CAP_STR
 from data.model.stock import Stock, MarketCapType, MarketCap
+from data.stock.constants import COL_NAMES, MARKET_CAP_STR
+from data.stock.my_secrets import STOCK_WATCHLIST_PATH
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -22,10 +23,10 @@ def extract_column(file: str, col: str):
     return df[col].tolist()
 
 
-def extract_col_to_list_glob(dir: str):
+def extract_col_to_list_glob(path: str):
     """extract one column from multiple csv files"""
     res = set()
-    for f in glob.glob(dir + '/*.csv'):
+    for f in glob.glob(path + '/*.csv'):
         res.update(extract_column(f, 'Symbol'))
     logger.info(f'total stocks in watchlist: {len(res)}')
     return list(res)
@@ -61,7 +62,7 @@ def get_rating(s: str) -> float:
 
 
 def get_market_cap(s: str) -> MarketCap:
-    """str to market cap, Mega Cap ($3.40T) -> (MEGA(4),3.4)"""
+    """str to market cap, Mega Cap ($3.40 T) -> (MEGA(4),3.4)"""
     dollar_idx = s.index('$')
     cap, unit = float(s[dollar_idx + 1:-2]), s[-2]
     if unit == 'B':
@@ -72,22 +73,21 @@ def get_market_cap(s: str) -> MarketCap:
         logger.error(f'unsupported unit: {unit}')
         raise RuntimeError('unsupported unit')
 
-    if s.startswith('Mega'):
+    if s.startswith('Mega'):  # > 180B
         cap_enum = MarketCapType.MEGA
-        if cap < 200_000: logger.debug('mega cap out of range: {cap}, {s}')
-    elif s.startswith('Large'):
+        if cap < 180_000: logger.debug(f'mega cap out of range: {cap}, {s}')
+    elif s.startswith('Large'):  # 30B, 200B
         cap_enum = MarketCapType.LARGE
-        if cap < 30_000 or cap > 200_000: logger.debug('large cap out of range: {cap}, {s}')
-    elif s.startswith('Medium'):
+        if cap < 30_000 or cap > 200_000: logger.debug(f'large cap out of range: {cap}, {s}')
+    elif s.startswith('Medium'):  # 5B, 35B
         cap_enum = MarketCapType.MID
-        if cap < 5_000 or cap > 30_000: logger.debug('medium cap out of range: {cap}, {s}')
-    elif s.startswith('Small'):
+        if cap < 5_000 or cap > 35_000: logger.debug(f'medium cap out of range: {cap}, {s}')
+    elif s.startswith('Small'):  # 250M, 6B
         cap_enum = MarketCapType.SMALL
-        if cap < 250 or cap > 5_000: logger.debug('small cap out of range: {cap}, {s}')
-    elif s.startswith('Micro'):
+        if cap < 250 or cap > 6_000: logger.debug(f'small cap out of range: {cap}, {s}')
+    elif s.startswith('Micro'):  # < 2B
         cap_enum = MarketCapType.MICRO
-        logger.warning(f'be careful with micro cap stocks: {s}')
-        if cap > 250: logger.debug(f'micro cap out of range: {cap}, {s}')
+        if cap > 2_000: logger.debug(f'micro cap out of range: {cap}, {s}')
     else:
         logger.error(f'unsupported market cap type: {s}')
         raise RuntimeError('unsupported market cap type')
@@ -130,20 +130,29 @@ def save_watchlist_mongo():
         # print(df['Analyst ratings'][15])
         # print(df['Analyst ratings'][16])
         etf, na = 'ETF', '--'
-        pe, industry, sector, eps, rating, short = (
-            COL_NAMES['pe'], COL_NAMES['industry'], COL_NAMES['sector'], COL_NAMES['eps'],
+        pe, industry, sector, volatility, eps, rating, short = (
+            COL_NAMES['pe'], COL_NAMES['industry'], COL_NAMES['sector'], COL_NAMES['volatility'], COL_NAMES['eps'],
             COL_NAMES['rating'], COL_NAMES['short'])
         df.loc[df[pe] == na, pe] = 0.0  # fill 0.0 for N/A PE
         df.loc[df[industry] == na, industry] = etf  # N/A industry -> ETF
         df.loc[df[sector] == na, sector] = etf  # N/A sector -> ETF
+        df.loc[df[volatility] == na, volatility] = '0.0%'
         df.loc[df[eps] == na, eps] = '$0'  # N/A eps -> 0
         df[rating] = df[rating].fillna('(0.0)')  # analyst rating not available
         df.loc[df[short] == na, short] = '0.0%'
         # print(df['Analyst ratings'][16])
+        # print(df[df.isnull().any(axis=1)])  # row with at least one null
+        if df.isnull().values.any():
+            logger.error(df.loc[:, df.isnull().any()])
+            raise RuntimeError('missing values')
+        if df[df == '--'].notnull().values.any():
+            logger.error(df.loc[:, df[df == '--'].any()])
+            raise RuntimeError('-- value')
 
         df.apply(lambda row: stocks.append(construct_stock(row)), axis=1)
+    logger.info(f'total stocks in watchlist: {len(stocks)}')
 
 
 if __name__ == '__main__':
     """testing"""
-    print(save_watchlist_mongo())
+    save_watchlist_mongo()
