@@ -7,22 +7,22 @@ from collections import Counter, defaultdict
 class Solution:
     def reorganizeString(self, s: str) -> str:
         counts = defaultdict(int)
-        max_c, max_cnt = None, 0
+        max_c, max_cnt, n = None, 0, len(s)
         for c in s:
             counts[c] += 1
             if counts[c] > max_cnt:
                 max_c, max_cnt = c, counts[c]
-        if max_cnt > (len(s) + 1) // 2:
+        if max_cnt > (n + 1) // 2:
             return ''
         i = 0
-        res = [''] * len(s)
+        res = [''] * n
         while counts[max_c] > 0:
             res[i] = max_c
             i += 2
             counts[max_c] -= 1
         for c in counts:
             while counts[c] > 0:
-                if i > len(s) - 1:
+                if i > n - 1:
                     i = 1
                 res[i] = c
                 i += 2
@@ -33,6 +33,7 @@ class Solution:
 
 class Solution2:
     def reorganizeString(self, s: str) -> str:
+        # Counter returns a Counter object, most_common() returns a list
         counts = Counter(s).most_common()  # sorting in most_common()
         n = len(s)
         if counts[0][1] > (n + 1) // 2: return ""

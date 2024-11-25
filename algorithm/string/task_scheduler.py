@@ -19,6 +19,19 @@ class Solution:
         return max(len(tasks), n_gaps * gap_l + max_cnt)
 
 
+class Solution3:
+    """15 ms, 18.44 mb, n+klgk time, k==26"""
+
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        counts = Counter(tasks).most_common()
+        max_cnt = 1
+        for i in range(1, len(counts)):
+            if counts[i][1] == counts[0][1]:
+                max_cnt += 1
+        gap_l, n_gaps = n + 1, counts[0][1] - 1
+        return max(len(tasks), n_gaps * gap_l + max_cnt)
+
+
 class Solution2:
     """348ms, 17mb, n+k time"""
 
