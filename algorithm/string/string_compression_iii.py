@@ -17,6 +17,7 @@ class Solution:
 
 class Solution2:
     def compressedString(self, word: str) -> str:
+        # groupby('aaabba') -> {'a':['a','a','a'], 'b':['b','b'], 'a':['a']}
         l_cnt = [(k, len(list(g))) for k, g in groupby(word)]
         res = ''
         for k, cnt in l_cnt:

@@ -20,12 +20,13 @@ class Solution:
 
 
 class SolutionLint:
-    """
-    @param schedule: a list schedule of employees
-    @return: Return a list of finite intervals
-    """
+    """8 ms, 6.18 mb"""
 
     def employee_free_time(self, schedule: List[List[int]]) -> List[Interval]:
+        """
+        @param schedule: a list schedule of employees
+        @return: Return a list of finite intervals
+        """
         # 81ms, 6.23Mb lint code
         intervals = list()
         for s in schedule:

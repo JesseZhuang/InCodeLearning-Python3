@@ -2,21 +2,20 @@
 
 
 class Solution:
-    """45ms, 16.9mb"""
+    """7 ms, 16.67 mb"""
 
     def countAndSay(self, n: int) -> str:
         res = "1"
         while n > 1:
-            nex = []
-            i = 0  ## 1121->211211
-            while i < len(res):
+            tmp, i, m = [], 0, len(res)
+            while i < m:
                 count = 1
-                while i + 1 < len(res) and res[i] == res[i + 1]:
+                while i + 1 < m and res[i] == res[i + 1]:
                     count += 1
                     i += 1
-                nex.append(str(count))
-                nex.append(res[i])
+                tmp.append(str(count))
+                tmp.append(res[i])
                 i += 1
-            res = "".join(nex)
+            res = "".join(tmp)  # 1121->211211
             n -= 1
         return res
