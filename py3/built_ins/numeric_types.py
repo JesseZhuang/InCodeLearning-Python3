@@ -1,5 +1,7 @@
 import fractions
-import math
+from math import pi, sin, tan
+
+
 # 1. Boolean
 
 
@@ -14,6 +16,7 @@ class UserDefined2:
     # class user_defined1:
     def __len__(self):
         return 0
+
 
 # Any object can be tested for truth, following are considered false.
 if (not (None or False or
@@ -33,7 +36,6 @@ logic_ops = {
 
 for k, v in logic_ops.items():
     print('  ', '{:<13}={:>6}'.format(k, v))
-
 
 # comparison operators <, >, <=, >=,  ==, !=. In C, == and != has less
 # precedence than the other 4. In python, all same, which has less precedence
@@ -64,6 +66,8 @@ print(15, 'abcdef' is D)
 # python caches small integers and small strings
 # in python 2.7 3.5, [-5, 256] are cached
 print(16, 'abcd' is not D)
+
+
 # TODO: isinstance, issubclass
 # TODO: string methods: tring methods, isslnum, isalpha, isdecimal, .etc
 
@@ -77,7 +81,7 @@ def __eq__(one, other):
 
 def __ne__(one, other):
     # todo why not use != ?
-    return one < other or other < one     # return not self == other
+    return one < other or other < one  # return not self == other
 
 
 def __lt__(one, other):
@@ -95,10 +99,11 @@ def __gt__(one, other):
 def __ge__(one, other):
     return not one < other
 
+
 p1 = 3
 p2 = 4
-print(21, p1.__lt__(p2))    # calls int.__lt__()
-print(22, __lt__(p1, p2))   # calls __lt__() line 73 above
+print(21, p1.__lt__(p2))  # calls int.__lt__()
+print(22, __lt__(p1, p2))  # calls __lt__() line 73 above
 print(23, __le__(p1, p2))
 print(24, __eq__(p1, p2))
 print(25, __ne__(p1, p2))
@@ -110,7 +115,7 @@ print(27, __ge__(p1, p2))
 print("=====numbers=====")
 print(type(1))
 print(type(1.0))
-print(type(1 + 1.0))   # coerce into float
+print(type(1 + 1.0))  # coerce into float
 
 # floating points accurate to 15 decimal places
 print(float(2))
@@ -124,9 +129,9 @@ print(11 / 2)
 
 # python directives __future__ pep236, pep263 coding in comment encoding
 print(11 // 2)  # same in py2 py3
-print(-11 // 2, 11 // -2)    # different in Java, C
+print(-11 // 2, 11 // -2)  # different in Java, C
 
 print(fractions.Fraction(6, 4))
-print(math.pi)
-print(math.sin(math.pi / 2))
-print(math.tan(math.pi / 4))   # python does not have infinite precision
+print(pi)
+print(sin(pi / 2))
+print(tan(pi / 4))  # python does not have infinite precision

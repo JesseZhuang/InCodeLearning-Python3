@@ -1,5 +1,5 @@
 """leet code 1055, medium, lint code 3652"""
-import math
+from math import ceil
 
 
 class Solution:
@@ -33,4 +33,4 @@ class Solution2:
         for c in tar:
             while c != s[res % n]:
                 res += 1
-        return math.ceil((res + 1) / n)  # res//n + 1
+        return ceil((res + 1) / n)  # res//n + 1

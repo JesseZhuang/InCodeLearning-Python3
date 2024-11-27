@@ -1,7 +1,7 @@
 """leet code 2458, hard"""
 from typing import Optional, List
 
-from algorithm.struct.tree_node import TreeNode
+from algorithm.jzstruct.tree_node import TreeNode
 
 
 class Solution:

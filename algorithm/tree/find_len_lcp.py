@@ -1,8 +1,8 @@
 """leet code 3043, medium"""
-import math
+from math import log10
 from typing import List
 
-from algorithm.struct.trie_node import TrieNode
+from algorithm.jzstruct.trie_node import TrieNode
 
 
 class Solution1:
@@ -30,5 +30,5 @@ class Solution2:
         res = 0
         for n in arr2:
             while n > 0 and n not in pre: n //= 10
-            if n > 0: res = max(res, int(math.log10(n)) + 1)
+            if n > 0: res = max(res, int(log10(n)) + 1)
         return res

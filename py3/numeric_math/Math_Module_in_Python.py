@@ -6,8 +6,8 @@
 # In[1]:
 
 import math
-dir(math)
 
+dir(math)
 
 # --------
 # __*round() vs math.ceil() vs math.floor()*__
@@ -16,10 +16,10 @@ dir(math)
 
 print(round(2.1))
 print(round(2.8))
-print("-"*20)
+print("-" * 20)
 print(math.ceil(2.1))
 print(math.ceil(2.8))
-print("-"*20)
+print("-" * 20)
 print(math.floor(2.1))
 print(math.floor(2.8))
 
@@ -40,12 +40,10 @@ print(math.floor(2.8))
 print(math.fmod(7, 2))
 print(7 % 2)
 
-
 # In[6]:
 
 print(math.fmod(7, -2))
 print(7 % (-2))
-
 
 # *Comments: In JavaScript, 7 % (-2) is also 1.*
 
@@ -59,7 +57,6 @@ print(7 % (-2))
 print(sum([0.1 for i in range(10)]))
 print(math.fsum([0.1 for i in range(10)]))
 
-
 # --------
 # _math.gcd(a, b)_
 # > Return the greatest common divisor of the integers a and b. If either
@@ -70,7 +67,6 @@ print(math.fsum([0.1 for i in range(10)]))
 
 math.gcd(25, 20)
 
-
 # --------
 # __*math.isfinite(), math.isinf(), math.isnan()*__
 
@@ -78,16 +74,13 @@ math.gcd(25, 20)
 
 math.isfinite(math.inf)
 
-
 # In[14]:
 
 math.isinf(math.inf)
 
-
 # In[15]:
 
 math.isnan(math.nan)
-
 
 # ---------
 # __*math.modf() and math.trunc()*__
@@ -96,11 +89,9 @@ math.isnan(math.nan)
 
 math.modf(3.1415)
 
-
 # In[16]:
 
 math.trunc(3.1415)
-
 
 # > For the ceil(), floor(), and modf() functions, note that all floating-point
 # numbers of sufficiently large magnitude are exact integers. Python floats
@@ -152,8 +143,7 @@ math.trunc(3.1415)
 
 # In[18]:
 
-1/math.inf
-
+1 / math.inf
 
 # --------
 # #### Unicode and UTF-8

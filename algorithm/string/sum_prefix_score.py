@@ -1,5 +1,5 @@
 """leet code 2416, hard"""
-from algorithm.struct.trie_node import TrieNode
+from algorithm.jzstruct.trie_node import TrieNode
 
 
 class Solution:

@@ -4,7 +4,7 @@ from collections import deque
 from queue import Queue
 from typing import Optional
 
-from algorithm.struct.graph_node import Node
+from algorithm.jzstruct.graph_node import Node
 
 
 class Solution:

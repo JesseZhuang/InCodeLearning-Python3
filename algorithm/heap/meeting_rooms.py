@@ -1,7 +1,7 @@
 """leet code 252, lint code 920, easy"""
 from typing import List
 
-from algorithm.struct.interval import Interval
+from algorithm.jzstruct.interval import Interval
 
 
 class Solution1:

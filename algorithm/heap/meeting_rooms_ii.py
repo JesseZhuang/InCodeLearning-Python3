@@ -2,7 +2,7 @@
 from heapq import heappop, heappush
 from typing import List
 
-from algorithm.struct.interval import Interval
+from algorithm.jzstruct.interval import Interval
 
 
 class Solution:

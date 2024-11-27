@@ -3,7 +3,7 @@ from collections import deque
 from heapq import heappush, heappop
 from typing import Optional
 
-from algorithm.struct.tree_node import TreeNode
+from algorithm.jzstruct.tree_node import TreeNode
 
 
 class Solution:

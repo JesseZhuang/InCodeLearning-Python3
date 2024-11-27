@@ -1,7 +1,7 @@
 """leet code 234, easy"""
 from typing import Optional
 
-from algorithm.struct.list_node import ListNode
+from algorithm.jzstruct.list_node import ListNode
 
 
 class Solution:

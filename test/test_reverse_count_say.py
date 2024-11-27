@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from algorithm.math.reverse_count_say import Solution
+from algorithm.jzmath.reverse_count_say import Solution
 
 
 class TestReverseCountSay(TestCase):

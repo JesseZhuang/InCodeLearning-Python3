@@ -4,12 +4,15 @@ from bisect import bisect_left, bisect_right, insort_left
 
 
 class TestBinarySearch(unittest.TestCase):
-    """binary search methods"""
+    """
+    test binary search methods
+    bisect is an alias of bisect_right
+    """
 
     @classmethod
     def setUpClass(cls):
         """set up class var"""
-        cls.TUPLE1 = (0, 1, 2, 3, 4, 6)
+        cls.TUPLE1 = (0, 1, 2, 3, 4, 6)  # length: 6
 
     def test_bisect_left_not_found(self):
         """5 not in list, should be inserted at index 5"""
@@ -24,6 +27,8 @@ class TestBinarySearch(unittest.TestCase):
         self.assertEqual(6, bisect_right(self.__class__.TUPLE1, 7))
         """5 not in list, should be inserted at index 5"""
         self.assertEqual(5, bisect_right(self.__class__.TUPLE1, 5))
+        """-1 not in list, should be inserted at index 0"""
+        self.assertEqual(0, bisect_right(self.__class__.TUPLE1, -1))
 
     def test_bisect_left_existing(self):
         """4 in list, new 4 should be inserted at index 4 on left of existing 4"""

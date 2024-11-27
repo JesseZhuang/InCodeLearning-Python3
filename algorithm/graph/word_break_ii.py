@@ -1,7 +1,7 @@
 """leet code 140, hard"""
 from typing import List
 
-from algorithm.struct.trie_node import TrieNode
+from algorithm.jzstruct.trie_node import TrieNode
 
 
 class Solution:

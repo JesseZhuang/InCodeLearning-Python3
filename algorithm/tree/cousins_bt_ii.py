@@ -2,7 +2,7 @@
 from collections import defaultdict
 from typing import Optional
 
-from algorithm.struct.tree_node import TreeNode
+from algorithm.jzstruct.tree_node import TreeNode
 
 
 class Solution:

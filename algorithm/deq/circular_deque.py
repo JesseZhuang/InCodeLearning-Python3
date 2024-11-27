@@ -1,6 +1,6 @@
 """leet code 641, medium"""
 
-from algorithm.struct.d_node import DNode
+from algorithm.jzstruct.d_node import DNode
 
 
 class MyCircularDeque:

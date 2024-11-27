@@ -1,10 +1,6 @@
-'''old mission OA'''
+"""old mission OA"""
 
 # pylint: disable-all
-
-import math
-import math  # safe to re-import, use cache
-import subprocess
 
 d = {None: None, None: None}
 print(d)
@@ -27,7 +23,6 @@ x = [1, 2, 3]
 print("reverse1", x.copy().reverse())  # reverse in place
 print(x.copy()[::-1])
 print(sorted(x.copy(), reverse=True))
-
 
 d = {'a': 'a1'}
 
@@ -68,7 +63,6 @@ p = Parent()
 #     fd.write('Hello')
 
 if __name__ == '__main__':
-    import math
     print(max(1, 2))
     pass
 
@@ -88,6 +82,7 @@ class Foo(object):
     def bar1(self, a, b):
         print('bar12', a, b)
 
+
 # pyc benefit
 
 
@@ -99,12 +94,14 @@ print(f'{FOO:>5.6}')
 
 
 f = Foo()
+
+
 # f.bar1('mm', 'mmm')
 # f.bar1('mm')
 
 
 def solution(str1):
-    '''calculate fee for phone calls'''
+    """calculate fee for phone calls"""
     lines = str1.splitlines()
     calls = dict()
     max_seconds = 0

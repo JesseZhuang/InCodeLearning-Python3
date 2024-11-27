@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from algorithm.math.possible_events import Solution
+from algorithm.jzmath.possible_events import Solution
 
 
 class TestSolution(TestCase):

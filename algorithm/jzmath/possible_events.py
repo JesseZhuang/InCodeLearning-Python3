@@ -1,5 +1,6 @@
 """biweekly 141, Q4"""
 from functools import cache
+
 from math import comb
 
 mod = 10 ** 9 + 7

@@ -1,7 +1,7 @@
 """leet code 2, medium"""
 from typing import Optional
 
-from algorithm.struct.list_node import ListNode
+from algorithm.jzstruct.list_node import ListNode
 
 
 def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:

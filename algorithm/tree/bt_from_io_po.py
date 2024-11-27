@@ -1,7 +1,7 @@
 """leet code 106, medium"""
 from typing import List, Optional
 
-from algorithm.struct.tree_node import TreeNode
+from algorithm.jzstruct.tree_node import TreeNode
 
 
 class Solution:

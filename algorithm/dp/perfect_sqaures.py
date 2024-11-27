@@ -1,6 +1,5 @@
 """leet code 279, medium"""
-
-import math
+from math import sqrt
 
 
 class Solution1:
@@ -13,7 +12,7 @@ class Solution1:
         dp = self.dp
         while len(dp) <= n:
             m = len(dp)
-            i, nex = 1, math.inf
+            i, nex = 1, jzmath.inf
             while i * i <= m:
                 nex = min(nex, dp[m - i * i] + 1)
                 i += 1
@@ -28,7 +27,7 @@ class Solution2:
     def numSquares(self, n: int) -> int:
         """43ms, 16.3Mb """
         # 4^a(8b+7)
-        sr = int(math.sqrt(n))
+        sr = int(sqrt(n))
         if sr * sr == n:
             return 1
         while n % 4 == 0:
@@ -38,7 +37,7 @@ class Solution2:
         i = 1
         while i * i <= n:
             sq = i * i
-            base = int(math.sqrt(n - sq))
+            base = int(sqrt(n - sq))
             if base * base + sq == n:
                 return 2
             i += 1
