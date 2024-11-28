@@ -1,6 +1,6 @@
 import unittest
 
-from algorithm.array.two_subtract import two_subtract
+from algorithm.jzarray.two_subtract import two_subtract
 
 
 class TestTwoSubtract(unittest.TestCase):

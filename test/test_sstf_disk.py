@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from algorithm.array.sstf_disk import SSTFDisk
+from algorithm.jzarray.sstf_disk import SSTFDisk
 
 
 class TestSSTFDisk(TestCase):

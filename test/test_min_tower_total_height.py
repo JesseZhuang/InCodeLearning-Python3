@@ -1,6 +1,6 @@
 import unittest
 
-from algorithm.array.max_tower_total_height import Solution
+from algorithm.jzarray.max_tower_total_height import Solution
 
 
 class TestMinTowerTotalHeight(unittest.TestCase):

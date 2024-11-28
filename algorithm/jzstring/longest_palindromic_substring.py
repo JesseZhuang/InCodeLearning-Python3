@@ -1,5 +1,5 @@
 """leet code 5, medium"""
-from algorithm.string.Manacher import Manacher
+from algorithm.jzstring.Manacher import Manacher
 
 
 class Solution:

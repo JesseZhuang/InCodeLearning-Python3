@@ -8,7 +8,7 @@ Constraints:
 2. word1 and word2 consist only of lowercase English letters
 """
 
-from algorithm.string.z_func import zfunc
+from algorithm.jzstring.z_func import zfunc
 
 
 class Solution2:

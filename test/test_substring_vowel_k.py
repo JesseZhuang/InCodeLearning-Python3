@@ -1,6 +1,6 @@
 import unittest
 
-from algorithm.string.substring_vowel_k_consonant_i import Solution
+from algorithm.jzstring.substring_vowel_k_consonant_i import Solution
 
 
 class TestSubstringVowel(unittest.TestCase):
