@@ -1,92 +1,70 @@
-"""project euler 208, hacker rank robot walks"""
+"""
+related to project euler 208, hacker rank robot walks
+ChatGPT, gemini all failed
+"""
+from math import cos, sin, pi
+
+RADIUS = 1
 
 
-# def robot_walks(k, steps, modulo):
-#     # Precompute factorials modulo `modulo`
-#     fact = [1] * (5 * k + 1)
-#     for i in range(2, 5 * k + 1):
-#         fact[i] = fact[i - 1] * i % modulo
-#
-#     # Function to calculate modular inverse using Fermat's little theorem
-#     def mod_inverse(x, mod):
-#         return pow(x, mod - 2, mod)
-#
-#     # Function to calculate combinations modulo `modulo`
-#     def comb(n, r, mod):
-#         if n < r or r < 0:
-#             return 0
-#         return fact[n] * mod_inverse(fact[r], mod) % mod * mod_inverse(fact[n - r], mod) % mod
-#
-#     # The total number of ways to choose movements
-#     total_ways = 0
-#     for left_turns in range(k + 1):  # Number of left turn loops
-#         # There are 5*k total moves split equally among left and right turns
-#         right_turns = k - left_turns
-#         if right_turns < 0:
-#             continue
-#         # Using stars and bars to distribute turns among directions
-#         ways_left = comb(5 * k, left_turns, modulo)
-#         ways_right = comb(5 * k, right_turns, modulo)
-#         total_ways += (ways_left * ways_right) % modulo
-#         total_ways %= modulo
-#
-#     return total_ways
-#
-#
-# import unittest
-#
-#
-# class TestRobotWalks(unittest.TestCase):
-#     def test_small_case(self):
-#         self.assertEqual(robot_walks(1, 6, 1000000007), 2)
-#
-#     def test_given_case(self):
-#         self.assertEqual(robot_walks(3, 6, 1000000007), 8)
-#
-#     def test_large_case(self):
-#         self.assertEqual(robot_walks(10, 6, 1000000007), 292)
-#
-#     def test_edge_case_zero(self):
-#         self.assertEqual(robot_walks(0, 6, 1000000007), 1)
-#
-#
-# if __name__ == "__main__":
-#     unittest.main()
-#
-# # Example usage
-# if __name__ == "__main__":
-#     k = 3
-#     steps = 6
-#     modulo = 1000000007
-#     print(robot_walks(k, steps, modulo))
-
-def robot_walks(k, steps, modulo):
-    from functools import lru_cache
-
-    # Total arcs are `5 * k`
-    total_arcs = 5 * k
-
-    # Define a memoized DP function
-    @lru_cache(None)
-    def dp(x, y, z, steps_left):
-        # Base case: If no steps are left, the robot must be at origin
-        if steps_left == 0:
-            return 1 if (x == 0 and y == 0 and z == 0) else 0
-
-        # Recursive case: Try clockwise and counterclockwise moves
-        clockwise = dp(x + 1, y - 1, z, steps_left - 1)
-        counterclockwise = dp(x - 1, y + 1, z, steps_left - 1)
-
-        # Return the result modulo the given constraint
-        return (clockwise + counterclockwise) % modulo
-
-    # Call the DP function starting from the origin
-    return dp(0, 0, 0, total_arcs)
+def equal_epsilon(a, b) -> bool:
+    return abs(a - b) < 1e-6
 
 
-# Example usage
-if __name__ == "__main__":
-    k = 3
-    steps = 6
-    modulo = 1000000007
-    print(robot_walks(k, steps, modulo))  # Expected output: 4060
+class State:
+    def __init__(self):
+        """arc center at origin (0,0), staring point (1,0), counterclockwise rotation"""
+        self.center = (0, 0)
+        self.angle = 0
+        self.d = 1  # direction: 1 counterclockwise, -1 clockwise
+
+    def get_point(self):
+        """ending point"""
+        (x, y), a = self.center, self.angle
+        return x + RADIUS * cos(a), y + RADIUS * sin(a)
+
+    def mirror(self):
+        """mirror center and update angle"""
+        x1, y1 = self.get_point()
+        x0, y0 = self.center
+        self.center = (2 * x1 - x0, 2 * y1 - y0)  # mirror
+        self.angle += pi
+        if self.angle > 2 * pi: self.angle -= 2 * pi
+        if self.angle < -2 * pi: self.angle += 2 * pi
+        self.d = -self.d
+
+    def rotate(self, angle: float, d: int):
+        if d != self.d: self.mirror()
+        self.angle += angle * self.d
+        if self.angle > 2 * pi: self.angle -= 2 * pi
+        if self.angle < -2 * pi: self.angle += 2 * pi
+
+
+class RobotWalks:
+    def __init__(self, n: int, m: int, K: int):
+        self.n = n
+        self.angle = 2 * pi / self.n
+        self.m = m
+        self.K = K
+
+    def journeys(self) -> int:
+        # start at (1,0)
+
+        def helper(steps, s: State) -> int:
+            res = 0
+            if steps == 0:
+                x, y = s.get_point()  # check whether returned to starting point (1,0)
+                return 1 if equal_epsilon(x, RADIUS) and equal_epsilon(y, 0) else 0
+            # sc = copy(s)
+            # try counterclockwise arc
+            s.rotate(self.angle, 1)
+            res += helper(steps - 1, s)
+            s.rotate(-self.angle, 1)  # backtrack
+            if steps == self.m: return res * 2
+            # try clockwise arc
+            s.rotate(self.angle, -1)
+            res += helper(steps - 1, s)
+            s.rotate(-self.angle, -1)
+            return res
+
+        return helper(self.m, State()) % self.K
