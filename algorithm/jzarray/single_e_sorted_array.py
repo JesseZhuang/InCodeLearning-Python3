@@ -4,6 +4,8 @@ from typing import List
 
 
 class Solution:
+    """0 ms, 24.3 mb"""
+
     def singleNonDuplicate(self, nums: List[int]) -> int:
         l, r = 0, len(nums) - 1
         while l < r:

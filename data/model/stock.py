@@ -25,7 +25,7 @@ class MarketCap:
     cap: float
 
 
-@dataclass
+@dataclass(frozen=True)
 class Stock:
     _id: str
     """ticker"""
@@ -51,3 +51,7 @@ class Stock:
     """date added to watchlist"""
     gain: float
     """total gains"""
+
+    @property
+    def id(self):
+        return self._id

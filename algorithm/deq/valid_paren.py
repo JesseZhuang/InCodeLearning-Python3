@@ -4,10 +4,12 @@ from collections import deque
 
 
 class Solution:
+    """0 ms, 17.42 mb"""
+
     def isValid(self, s: str) -> bool:
         st = deque()
         for c in s:
-            match c:
+            match c:  # match case since 3.10
                 case '(':
                     st.append(')')
                 case '[':

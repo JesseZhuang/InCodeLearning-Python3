@@ -1,3 +1,4 @@
 sortedcontainers: leetcode
 pandas: csv processing
 pymongo: mongodb
+notebook: jupyter notebook

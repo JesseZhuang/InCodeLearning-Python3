@@ -6,29 +6,22 @@ from algorithm.jzstruct.tree_node import TreeNode
 
 
 class Solution:
-    """
-    lint code, 81ms, 5.01mb
-    @param root: the root of tree
-    @return: the vertical order traversal
-    """
+    """lint code, 81 ms, 5.01 mb"""
 
     def vertical_order(self, root: TreeNode) -> List[List[int]]:
-        # write your code here
-        if not root: return []
-        col_nodes = defaultdict(list)
-        q = deque()
-        q.append((root, 0))
-        min_c = max_c = 0
-        while q:
-            node, col = q.popleft()
-            col_nodes[col].append(node.val)
-            max_c = max(max_c, col)
-            min_c = min(min_c, col)
-            if node.left:
-                q.append((node.left, col - 1))
-            if node.right:
-                q.append((node.right, col + 1))
         res = []
+        if not root: return res
+        col_nodes = defaultdict(list)
+        min_c, max_c, q = 0, 0, deque()
+        q.append((root, 0))
+        while q:
+            n, c = q.popleft()
+            col_nodes[c].append(n.val)
+            max_c, min_c = max(max_c, c), min(min_c, c)
+            if n.left:
+                q.append((n.left, c - 1))
+            if n.right:
+                q.append((n.right, c + 1))
         for i in range(min_c, max_c + 1):
             res.append(col_nodes[i])
         return res

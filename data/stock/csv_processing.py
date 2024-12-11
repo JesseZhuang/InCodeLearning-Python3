@@ -5,6 +5,7 @@ from datetime import datetime
 
 import pandas as pd
 
+from data.client.mongo import MongoWrapper
 from data.model.stock import Stock, MarketCapType, MarketCap
 from data.stock.constants import COL_NAMES, MARKET_CAP_STR
 from data.stock.my_secrets import STOCK_WATCHLIST_PATH
@@ -30,20 +31,6 @@ def extract_col_to_list_glob(path: str):
         res.update(extract_column(f, 'Symbol'))
     logger.info(f'total stocks in watchlist: {len(res)}')
     return list(res)
-
-
-def save_watchlist():
-    # extract stock tickets from watchlist csv export, keep in Google Drive
-    with open('stock_list.txt', 'w') as f:
-        stocks = extract_col_to_list_glob(STOCK_WATCHLIST_PATH)
-        logger.debug(f'write 50 tickers per line')
-
-        def chunks(lst, n):
-            for i in range(0, len(lst), n):
-                yield lst[i:i + n]
-
-        list_of_lists = chunks(stocks, 50)
-        f.write('\n'.join(','.join(l) for l in list_of_lists))
 
 
 def p2f(s: str) -> float:
@@ -81,10 +68,10 @@ def get_market_cap(s: str) -> MarketCap:
         if cap < 30_000 or cap > 200_000: logger.debug(f'large cap out of range: {cap}, {s}')
     elif s.startswith('Medium'):  # 5B, 35B
         cap_enum = MarketCapType.MID
-        if cap < 5_000 or cap > 35_000: logger.debug(f'medium cap out of range: {cap}, {s}')
+        if cap < 7_000 or cap > 35_000: logger.debug(f'medium cap out of range: {cap}, {s}')
     elif s.startswith('Small'):  # 250M, 6B
         cap_enum = MarketCapType.SMALL
-        if cap < 250 or cap > 6_000: logger.debug(f'small cap out of range: {cap}, {s}')
+        if cap < 250 or cap > 7_000: logger.debug(f'small cap out of range: {cap}, {s}')
     elif s.startswith('Micro'):  # < 2B
         cap_enum = MarketCapType.MICRO
         if cap > 2_000: logger.debug(f'micro cap out of range: {cap}, {s}')
@@ -119,44 +106,72 @@ def construct_stock(r):
     return Stock(**stock)
 
 
-def save_watchlist_mongo():
-    stocks = []
-    for f in glob.glob(STOCK_WATCHLIST_PATH + '/*.csv'):
-        df = pd.read_csv(f, header=2, index_col=False, skipfooter=30, engine='python')
-        # print(df.shape)
-        # print(df.head())
-        # print(df.tail())
-        # print(df['P/E ratio'][0])
-        # print(type(df['P/E ratio'][0]))
-        # print(df['Analyst ratings'][15])
-        # print(df['Analyst ratings'][16])
-        etf, na = 'ETF', '--'
-        pe, industry, sector, volatility, eps, rating, short = (
-            COL_NAMES['pe'], COL_NAMES['industry'], COL_NAMES['sector'], COL_NAMES['volatility'], COL_NAMES['eps'],
-            COL_NAMES['rating'], COL_NAMES['short'])
-        df.loc[df[pe] == na, pe] = 0.0  # fill 0.0 for N/A PE
-        df.loc[df[industry] == na, industry] = etf  # N/A industry -> ETF
-        df.loc[df[sector] == na, sector] = etf  # N/A sector -> ETF
-        df.loc[df[volatility] == na, volatility] = '0.0%'
-        df.loc[df[eps] == na, eps] = '$0'  # N/A eps -> 0
-        df[rating] = df[rating].fillna('(0.0)')  # analyst rating not available
-        df.loc[df[short] == na, short] = '0.0%'
-        # print(df['Analyst ratings'][16])
-        # print(df[df.isnull().any(axis=1)])  # row with at least one null
-        if df.isnull().values.any():
-            logger.error(df.loc[:, df.isnull().any()])
-            raise RuntimeError('missing values')
-        if df[df == '--'].notnull().values.any():
-            logger.error(df.loc[:, df[df == '--'].any()])
-            raise RuntimeError('-- value')
-        # df[pe] = to_numeric(df[pe])
-        # print(df.sort_values(by=[pe], ascending=True))
-        print(df[pe])
+class CSVStockProcessor:
+    @staticmethod
+    def save_watchlist():
+        """extract stock tickers from watchlist csv export, can keep in Google Drive"""
+        with open('stock_list.txt', 'w') as f:
+            stocks = extract_col_to_list_glob(STOCK_WATCHLIST_PATH)
+            logger.debug(f'write 50 tickers per line')
 
-        df.apply(lambda row: stocks.append(construct_stock(row)), axis=1)
-    logger.info(f'total stocks in watchlist: {len(stocks)}')
+            def chunks(lst, n):
+                for i in range(0, len(lst), n):
+                    yield lst[i:i + n]
+
+            list_of_lists = chunks(stocks, 50)
+            f.write('\n'.join(','.join(l) for l in list_of_lists))
+
+    @staticmethod
+    def save_watchlist_mongo():
+        """process fidelity downloaded watchlist csv files, save to mongodb"""
+        stocks = []
+        for f in glob.glob(STOCK_WATCHLIST_PATH + '/*.csv'):
+            df = pd.read_csv(f, header=2, index_col=False, skipfooter=30, engine='python')
+            # print(df.shape)
+            # print(df.head())
+            # print(df.tail())
+            # print(df['P/E ratio'][0])
+            # print(type(df['P/E ratio'][0]))
+            # print(df['Analyst ratings'][15])
+            # print(df['Analyst ratings'][16])
+            etf, na = 'ETF', '--'
+            pe, industry, sector, volatility, eps, rating, short = (
+                COL_NAMES['pe'], COL_NAMES['industry'], COL_NAMES['sector'], COL_NAMES['volatility'], COL_NAMES['eps'],
+                COL_NAMES['rating'], COL_NAMES['short'])
+            df.loc[df[pe] == na, pe] = 0.0  # fill 0.0 for N/A PE
+            df.loc[df[industry] == na, industry] = etf  # N/A industry -> ETF
+            df.loc[df[sector] == na, sector] = etf  # N/A sector -> ETF
+            df.loc[df[volatility] == na, volatility] = '0.0%'
+            df.loc[df[eps] == na, eps] = '$0'  # N/A eps -> 0
+            df[rating] = df[rating].fillna('(0.0)')  # analyst rating not available
+            df.loc[df[short] == na, short] = '0.0%'
+            # print(df['Analyst ratings'][16])
+            # print(df[df.isnull().any(axis=1)])  # row with at least one null
+            if df.isnull().values.any():
+                logger.error(df.loc[:, df.isnull().any()])
+                raise RuntimeError('missing values')
+            if df[df == '--'].notnull().values.any():
+                logger.error(df.loc[:, df[df == '--'].any()])
+                raise RuntimeError('-- value')
+            # df[pe] = to_numeric(df[pe])
+            # print(df.sort_values(by=[pe], ascending=True))
+            # print(df[pe])
+
+            df.apply(lambda row: stocks.append(construct_stock(row)), axis=1)
+        l1, l2 = len(stocks), len(set([s.id for s in stocks]))
+        logger.info(f'total stocks in watchlist: l1 = {l1}, l2 = {l2}')
+        if l1 != l2: raise RuntimeError('duplicate found')
+        mongo = MongoWrapper()
+        db, collection, cnt = 'stock', 'watchlist', 0
+        for s in stocks:
+            if mongo.query_watchlist_stock(db, collection, s.id): continue
+            mongo.insert_watchlist_stock(db, collection, s)
+            logger.info(f'inserted stock: {s.id}')
+            cnt += 1
+        logger.info(f'saved {cnt} stocks in mongo')
 
 
 if __name__ == '__main__':
     """testing"""
-    save_watchlist_mongo()
+    # CSVStockProcessor.save_watchlist()
+    # CSVStockProcessor.save_watchlist_mongo()
