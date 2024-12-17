@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-def extract_column(file: str, col: str):
+def extract_column(file: str, col: str) -> list[str]:
     """extra all rows for one column, comma delimited"""
     df = pd.read_csv(file, header=2, index_col=False, skipfooter=30, engine='python')
     # print(df.columns)
@@ -24,13 +24,13 @@ def extract_column(file: str, col: str):
     return df[col].tolist()
 
 
-def extract_col_to_list_glob(path: str):
+def extract_col_to_list_glob(path: str) -> list[str]:
     """extract one column from multiple csv files"""
-    res = set()
+    res = []
     for f in glob.glob(path + '/*.csv'):
-        res.update(extract_column(f, 'Symbol'))
+        res.extend(extract_column(f, 'Symbol'))
     logger.info(f'total stocks in watchlist: {len(res)}')
-    return list(res)
+    return res
 
 
 def p2f(s: str) -> float:
@@ -62,13 +62,13 @@ def get_market_cap(s: str) -> MarketCap:
 
     if s.startswith('Mega'):  # > 180B
         cap_enum = MarketCapType.MEGA
-        if cap < 180_000: logger.debug(f'mega cap out of range: {cap}, {s}')
+        if cap < 170_000: logger.debug(f'mega cap out of range: {cap}, {s}')
     elif s.startswith('Large'):  # 30B, 200B
         cap_enum = MarketCapType.LARGE
-        if cap < 30_000 or cap > 200_000: logger.debug(f'large cap out of range: {cap}, {s}')
+        if cap < 40_000 or cap > 180_000: logger.debug(f'large cap out of range: {cap}, {s}')
     elif s.startswith('Medium'):  # 5B, 35B
         cap_enum = MarketCapType.MID
-        if cap < 7_000 or cap > 35_000: logger.debug(f'medium cap out of range: {cap}, {s}')
+        if cap < 7_000 or cap > 40_000: logger.debug(f'medium cap out of range: {cap}, {s}')
     elif s.startswith('Small'):  # 250M, 6B
         cap_enum = MarketCapType.SMALL
         if cap < 250 or cap > 7_000: logger.debug(f'small cap out of range: {cap}, {s}')
@@ -113,6 +113,7 @@ class CSVStockProcessor:
         with open('stock_list.txt', 'w') as f:
             stocks = extract_col_to_list_glob(STOCK_WATCHLIST_PATH)
             logger.debug(f'write 50 tickers per line')
+            find_duplicate(stocks)
 
             def chunks(lst, n):
                 for i in range(0, len(lst), n):
@@ -120,10 +121,12 @@ class CSVStockProcessor:
 
             list_of_lists = chunks(stocks, 50)
             f.write('\n'.join(','.join(l) for l in list_of_lists))
+            f.write(f'\n{datetime.today()}: total: {len(stocks)}')
 
     @staticmethod
     def save_watchlist_mongo():
         """process fidelity downloaded watchlist csv files, save to mongodb"""
+        CSVStockProcessor.save_watchlist()
         stocks = []
         for f in glob.glob(STOCK_WATCHLIST_PATH + '/*.csv'):
             df = pd.read_csv(f, header=2, index_col=False, skipfooter=30, engine='python')
@@ -158,9 +161,6 @@ class CSVStockProcessor:
             # print(df[pe])
 
             df.apply(lambda row: stocks.append(construct_stock(row)), axis=1)
-        l1, l2 = len(stocks), len(set([s.id for s in stocks]))
-        logger.info(f'total stocks in watchlist: l1 = {l1}, l2 = {l2}')
-        if l1 != l2: raise RuntimeError('duplicate found')
         mongo = MongoWrapper()
         db, collection, cnt = 'stock', 'watchlist', 0
         for s in stocks:
@@ -171,7 +171,19 @@ class CSVStockProcessor:
         logger.info(f'saved {cnt} stocks in mongo')
 
 
+def find_duplicate(l: list[str]):
+    res, dup = set(), []
+    for s in l:
+        if s not in res:
+            res.add(s)
+        else:
+            dup.append(s)
+    if dup:
+        logger.error(f'duplicate tickers: {dup}')
+        raise RuntimeError('duplicate tickers')
+
+
 if __name__ == '__main__':
     """testing"""
     # CSVStockProcessor.save_watchlist()
-    # CSVStockProcessor.save_watchlist_mongo()
+    CSVStockProcessor.save_watchlist_mongo()
