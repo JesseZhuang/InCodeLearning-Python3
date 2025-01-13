@@ -2,8 +2,8 @@ import logging
 from datetime import datetime
 from unittest import TestCase
 
-from data.client.mongo import MongoWrapper
-from data.model.stock import Stock
+from stock.client.mongo import MongoWrapper
+from stock.model.stock import Stock
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

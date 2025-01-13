@@ -5,10 +5,10 @@ from datetime import datetime
 
 import pandas as pd
 
-from data.client.mongo import MongoWrapper
-from data.model.stock import Stock, MarketCapType, MarketCap
-from data.stock.constants import COL_NAMES, MARKET_CAP_STR
-from data.stock.my_secrets import STOCK_WATCHLIST_PATH
+from stock.client.mongo import MongoWrapper
+from stock.model.stock import Stock, MarketCapType, MarketCap
+from stock.stock.constants import COL_NAMES, MARKET_CAP_STR
+from stock.stock.my_secrets import STOCK_WATCHLIST_PATH
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -109,9 +109,12 @@ def construct_stock(r):
 class CSVStockProcessor:
     @staticmethod
     def save_watchlist():
-        """extract stock tickers from watchlist csv export, can keep in Google Drive"""
+        """
+        extract stock tickers from watchlist csv export
+        can copy the generated file to cloud dive to back up
+        """
         with open('stock_list.txt', 'w') as f:
-            stocks = extract_col_to_list_glob(STOCK_WATCHLIST_PATH)
+            stocks = extract_col_to_list_glob(f'{STOCK_WATCHLIST_PATH}/watchlist')
             logger.debug(f'write 50 tickers per line')
             find_duplicate(stocks)
 
@@ -121,12 +124,14 @@ class CSVStockProcessor:
 
             list_of_lists = chunks(stocks, 50)
             f.write('\n'.join(','.join(l) for l in list_of_lists))
-            f.write(f'\n{datetime.today()}: total: {len(stocks)}')
+            f.write(f'\n{datetime.today()}: total: {len(stocks)}\n')
 
     @staticmethod
     def save_watchlist_mongo():
-        """process fidelity downloaded watchlist csv files, save to mongodb"""
-        CSVStockProcessor.save_watchlist()
+        """
+        process fidelity downloaded watchlist csv files, save to mongodb
+        needed once for new stock tickers
+        """
         stocks = []
         for f in glob.glob(STOCK_WATCHLIST_PATH + '/*.csv'):
             df = pd.read_csv(f, header=2, index_col=False, skipfooter=30, engine='python')
@@ -186,4 +191,4 @@ def find_duplicate(l: list[str]):
 if __name__ == '__main__':
     """testing"""
     # CSVStockProcessor.save_watchlist()
-    CSVStockProcessor.save_watchlist_mongo()
+    # CSVStockProcessor.save_watchlist_mongo()

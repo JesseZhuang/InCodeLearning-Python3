@@ -2,7 +2,7 @@ import dataclasses
 import json
 from unittest import TestCase
 
-from data.model.stock import MarketCap, MarketCapType
+from stock.model.stock import MarketCap, MarketCapType
 
 
 class TestMarketCap(TestCase):

@@ -1,6 +1,3 @@
-"""
-stock in watchlist
-"""
 import datetime
 import enum
 from dataclasses import dataclass
@@ -25,8 +22,11 @@ class MarketCap:
     cap: float
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True)  # frozen=True immutable hashable
 class Stock:
+    """
+    stock in watchlist
+    """
     _id: str
     """ticker"""
     name: str
