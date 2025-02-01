@@ -3,7 +3,7 @@ from typing import List
 
 
 class Solution:
-    """63ms, 17.75mb"""
+    """3ms, 19.13mb"""
 
     def twoSum(self, nums: List[int], target: int) -> List[int]:
         val_ind = dict()
