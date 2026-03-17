@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)  # default logging goes to consoleg
+logger = logging.getLogger(__name__)  # default logging goes to console
 logging.basicConfig(level=logging.INFO)  # default level is warning
 
 try:

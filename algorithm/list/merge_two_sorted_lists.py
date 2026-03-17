@@ -13,7 +13,7 @@ class Solution:
     """0 ms, 17.93 mb"""
 
     def mergeTwoLists(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
-        dummy = ListNode(0)
+        dummy = ListNode(val=0)
         cur = dummy
         while l1 and l2:
             if l1.val < l2.val:

@@ -13,3 +13,4 @@ class Solution:
                 return [val_ind[v], i]
             else:
                 val_ind[n] = i
+        raise RuntimeError("solution not found")
