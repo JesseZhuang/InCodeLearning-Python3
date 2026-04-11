@@ -1,17 +1,13 @@
-"""leet code 56, medium"""
-from typing import List
+"""leet 56, medium, tags: array, sorting."""
 
 
 class Solution:
-    """128ms, 20.5mb"""
-
-    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
-        intervals.sort()
+    def merge(self, intervals: list[list[int]]) -> list[list[int]]:
+        intervals.sort()  # O(n log n), sort by start then end
         res = [intervals[0]]
-        for i in intervals[1:]:
-            prev = res[-1]
-            if i[0] > prev[1]:
-                res.append(i)
+        for start, end in intervals[1:]:  # O(n)
+            if start <= res[-1][1]:
+                res[-1][1] = max(res[-1][1], end)
             else:
-                prev[1] = max(prev[1], i[1])
-        return res
+                res.append([start, end])
+        return res  # Time O(n log n), Space O(n)
