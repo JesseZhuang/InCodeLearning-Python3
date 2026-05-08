@@ -27,7 +27,20 @@ class MedianFinder:
             return (-self.left[0] + self.right[0])/2.0
 
 
-# Your MedianFinder object will be instantiated and called as such:
-# obj = MedianFinder()
-# obj.addNum(num)
-# param_2 = obj.findMedian()
+class MedianFinderSorted:
+    '''Using SortedList (balanced BST). O(log n) add, O(1) find median.'''
+
+    def __init__(self):
+        from sortedcontainers import SortedList
+        self.sl = SortedList()
+
+    def addNum(self, num: int) -> None:
+        self.sl.add(num)  # O(log n)
+
+    def findMedian(self) -> float:
+        n = len(self.sl)
+        mid = n // 2
+        if n % 2 == 1:
+            return self.sl[mid]  # O(1) index access
+        else:
+            return (self.sl[mid - 1] + self.sl[mid]) / 2.0
