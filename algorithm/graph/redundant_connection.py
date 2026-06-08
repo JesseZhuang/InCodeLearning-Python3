@@ -1,53 +1,75 @@
-"""leet 684, medium"""
+"""LeetCode 684, medium, tags: tree, union find, graph."""
+
+from typing import List
 
 
 class Solution:
-    """todo editorial"""
-    cycle_start = -1
+    """Union Find. O(n * alpha(n)) time ~= O(n), O(n) space."""
 
-    # Perform the DFS and store a node in the cycle as cycleStart.
-    def _DFS(self, src, visited, adj_list, parent):
-        visited[src] = True
+    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
+        n = len(edges)
+        parent = list(range(n + 1))
+        rank = [0] * (n + 1)
 
-        for adj in adj_list[src]:
-            if not visited[adj]:
-                parent[adj] = src
-                self._DFS(adj, visited, adj_list, parent)
-                # If the node is visited and the parent is different then the
-                # node is part of the cycle.
-            elif adj != parent[src] and self.cycle_start == -1:
-                self.cycle_start = adj
-                parent[adj] = src
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]  # path compression
+                x = parent[x]
+            return x
 
-    def findRedundantConnection(self, edges):
-        N = len(edges)
+        def union(x, y) -> bool:
+            px, py = find(x), find(y)
+            if px == py:
+                return False  # already connected — this edge is redundant
+            if rank[px] < rank[py]:  # union by rank
+                px, py = py, px
+            parent[py] = px
+            if rank[px] == rank[py]:
+                rank[px] += 1
+            return True
 
-        visited = [False] * N
-        parent = [-1] * N
+        for u, v in edges:
+            if not union(u, v):
+                return [u, v]
+        return []
 
-        adj_list = [[] for _ in range(N)]
-        for edge in edges:
-            adj_list[edge[0] - 1].append(edge[1] - 1)
-            adj_list[edge[1] - 1].append(edge[0] - 1)
 
-        self._DFS(0, visited, adj_list, parent)
+class Solution2:
+    """DFS cycle detection. O(n) time, O(n) space."""
 
-        cycle_nodes = {}
-        node = self.cycle_start
-        # Start from the cycleStart node and backtrack to get all the nodes in
-        # the cycle. Mark them all in the map.
+    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
+        n = len(edges)
+        adj = [[] for _ in range(n)]
+        for u, v in edges:
+            adj[u - 1].append(v - 1)
+            adj[v - 1].append(u - 1)
+
+        visited = [False] * n
+        parent = [-1] * n
+        cycle_start = -1
+
+        def dfs(src):
+            nonlocal cycle_start
+            visited[src] = True
+            for nei in adj[src]:
+                if not visited[nei]:
+                    parent[nei] = src
+                    dfs(nei)
+                elif nei != parent[src] and cycle_start == -1:
+                    cycle_start = nei
+                    parent[nei] = src
+
+        dfs(0)
+
+        cycle_nodes = set()
+        node = cycle_start
         while True:
-            cycle_nodes[node] = 1
+            cycle_nodes.add(node)
             node = parent[node]
-            if node == self.cycle_start:
+            if node == cycle_start:
                 break
 
-        # If both nodes of the edge were marked as cycle nodes then this edge
-        # can be removed.
         for i in range(len(edges) - 1, -1, -1):
-            if (edges[i][0] - 1) in cycle_nodes and (
-                    edges[i][1] - 1
-            ) in cycle_nodes:
+            if (edges[i][0] - 1) in cycle_nodes and (edges[i][1] - 1) in cycle_nodes:
                 return edges[i]
-
-        return []  # This line should theoretically never be reached
+        return []
