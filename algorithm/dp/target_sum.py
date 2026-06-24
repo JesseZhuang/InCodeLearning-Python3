@@ -1,29 +1,32 @@
-"""leet 494, medium"""
+"""leet 494, medium, tags: array, dynamic programming, backtracking."""
 
 
 class Solution:
-    """todo editorial"""
+    """Subset sum DP. O(n*s) time, O(s) space. n: len(nums), s: sum(nums)."""
 
     def findTargetSumWays(self, nums: list[int], target: int) -> int:
-        total_sum = sum(nums)
-        dp = [0] * (2 * total_sum + 1)
+        total = sum(nums)
+        if (total + target) % 2 != 0 or abs(target) > total:
+            return 0
+        p = (total + target) // 2  # sum of elements assigned '+'
+        dp = [0] * (p + 1)  # dp[j]: ways to reach sum j
+        dp[0] = 1
+        for num in nums:  # O(n)
+            for j in range(p, num - 1, -1):  # O(s), reverse to avoid reuse
+                dp[j] += dp[j - num]
+        return dp[p]
 
-        # Initialize the first row of the DP table
-        dp[nums[0] + total_sum] = 1  # Adding nums[0]
-        dp[-nums[0] + total_sum] += 1  # Subtracting nums[0]
 
-        # Fill the DP table
-        for index in range(1, len(nums)):
-            next_dp = [0] * (2 * total_sum + 1)
-            for sum_val in range(-total_sum, total_sum + 1):
-                if dp[sum_val + total_sum] > 0:
-                    next_dp[sum_val + nums[index] + total_sum] += dp[
-                        sum_val + total_sum
-                        ]
-                    next_dp[sum_val - nums[index] + total_sum] += dp[
-                        sum_val + total_sum
-                        ]
-            dp = next_dp
+class Solution2:
+    """DFS + memoization. O(n*s) time, O(n*s) space."""
 
-        # Return the result if the target is within the valid range
-        return 0 if abs(target) > total_sum else dp[target + total_sum]
+    def findTargetSumWays(self, nums: list[int], target: int) -> int:
+        from functools import cache
+
+        @cache
+        def dfs(i: int, cur: int) -> int:  # O(n*s) states
+            if i == len(nums):
+                return 1 if cur == target else 0
+            return dfs(i + 1, cur + nums[i]) + dfs(i + 1, cur - nums[i])
+
+        return dfs(0, 0)
