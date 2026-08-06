@@ -1,35 +1,58 @@
 import unittest
 
-from algorithm.deq.daily_temperatures import Solution
+from algorithm.stack.daily_temperatures import Solution
 
 
 class TestDailyTemperatures(unittest.TestCase):
     def setUp(self):
         self.solutions = [Solution()]
 
-    def verify(self, temperatures, expected):
-        for sol in self.solutions:
-            with self.subTest(sol=sol.__class__.__name__):
-                self.assertEqual(expected, sol.dailyTemperatures(temperatures))
-
     def test_example1(self):
-        self.verify([73, 74, 75, 71, 69, 72, 76, 73], [1, 1, 4, 2, 1, 1, 0, 0])
+        for sol in self.solutions:
+            self.assertEqual(
+                [1, 1, 4, 2, 1, 1, 0, 0],
+                sol.dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]),
+            )
 
     def test_example2(self):
-        self.verify([30, 40, 50, 60], [1, 1, 1, 0])
+        for sol in self.solutions:
+            self.assertEqual(
+                [1, 1, 1, 0],
+                sol.dailyTemperatures([30, 40, 50, 60]),
+            )
 
     def test_example3(self):
-        self.verify([30, 60, 90], [1, 1, 0])
+        for sol in self.solutions:
+            self.assertEqual(
+                [1, 1, 0],
+                sol.dailyTemperatures([30, 60, 90]),
+            )
 
     def test_single(self):
-        self.verify([50], [0])
+        for sol in self.solutions:
+            self.assertEqual([0], sol.dailyTemperatures([50]))
 
     def test_decreasing(self):
-        self.verify([90, 80, 70, 60], [0, 0, 0, 0])
+        for sol in self.solutions:
+            self.assertEqual(
+                [0, 0, 0, 0],
+                sol.dailyTemperatures([90, 80, 70, 60]),
+            )
 
     def test_all_same(self):
-        self.verify([70, 70, 70], [0, 0, 0])
+        for sol in self.solutions:
+            self.assertEqual(
+                [0, 0, 0],
+                sol.dailyTemperatures([70, 70, 70]),
+            )
 
-    def test_two_elements(self):
-        self.verify([31, 32], [1, 0])
-        self.verify([32, 31], [0, 0])
+    def test_warmer_at_end(self):
+        for sol in self.solutions:
+            self.assertEqual(
+                [4, 3, 2, 1, 0],
+                sol.dailyTemperatures([30, 30, 30, 30, 31]),
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()
