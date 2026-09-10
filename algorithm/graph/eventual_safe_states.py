@@ -1,37 +1,43 @@
-"""leet 802, medium"""
+"""leet 802, medium, tags: graph, dfs, bfs, topological sort."""
+
+from collections import deque
 
 
 class Solution:
-    """todo editorial"""
-
-    def dfs(self, node, adj, visit, inStack):
-        # If the node is already in the stack, we have a cycle.
-        if inStack[node]:
-            return True
-        if visit[node]:
-            return False
-        # Mark the current node as visited and part of current recursion stack.
-        visit[node] = True
-        inStack[node] = True
-        for neighbor in adj[node]:
-            if self.dfs(neighbor, adj, visit, inStack):
-                return True
-        # Remove the node from the stack.
-        inStack[node] = False
-        return False
-
     def eventualSafeNodes(self, graph: list[list[int]]) -> list[int]:
+        """DFS 3-coloring. O(V+E) time, O(V) space."""
         n = len(graph)
+        color = [0] * n  # 0: unvisited, 1: visiting, 2: safe
 
-        visit = [False] * n
-        inStack = [False] * n
+        def dfs(node: int) -> bool:
+            """Returns True if node is safe."""
+            if color[node] != 0:
+                return color[node] == 2
+            color[node] = 1  # O(1) mark visiting
+            for nei in graph[node]:  # O(out-degree) per node, O(E) total
+                if not dfs(nei):
+                    return False
+            color[node] = 2
+            return True
 
-        for i in range(n):
-            self.dfs(i, graph, visit, inStack)
+        return [i for i in range(n) if dfs(i)]
 
-        safeNodes = []
-        for i in range(n):
-            if not inStack[i]:
-                safeNodes.append(i)
-
-        return safeNodes
+    def eventualSafeNodesBFS(self, graph: list[list[int]]) -> list[int]:
+        """Reverse graph + topological sort BFS. O(V+E) time, O(V+E) space."""
+        n = len(graph)
+        out_degree = [0] * n
+        rev = [[] for _ in range(n)]  # O(V+E) space for reverse adjacency list
+        for u in range(n):
+            out_degree[u] = len(graph[u])  # O(V)
+            for v in graph[u]:
+                rev[v].append(u)  # O(E) total
+        q = deque(u for u in range(n) if out_degree[u] == 0)
+        safe = [False] * n
+        while q:  # O(V+E) BFS on reverse graph
+            node = q.popleft()
+            safe[node] = True
+            for prev in rev[node]:
+                out_degree[prev] -= 1
+                if out_degree[prev] == 0:
+                    q.append(prev)
+        return [i for i in range(n) if safe[i]]
