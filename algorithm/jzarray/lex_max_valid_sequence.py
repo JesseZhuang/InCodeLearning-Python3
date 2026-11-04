@@ -2,9 +2,15 @@
 
 
 class Solution:
-    """todo editorial"""
+    """Build the lexicographically largest distanced sequence by backtracking."""
 
     def constructDistancedSequence(self, target_number: int) -> list[int]:
+        """Return a valid sequence, trying larger values before smaller ones.
+
+        Time: O(n * n!) in the conservative worst case; there are at most n!
+        partial placement orders, each trying or skipping up to n values/slots.
+        Space: O(n) for the result, used-number table, and recursion stack.
+        """
         # Initialize the result sequence with size 2*n - 1 filled with 0s
         result_sequence = [0] * (target_number * 2 - 1)
 
@@ -35,8 +41,8 @@ class Solution:
                 target_number,
             )
 
-        # Attempt to place numbers from targetNumber to 1 for a
-        # lexicographically largest result
+        # Descending choices make the first complete solution lexicographically
+        # largest. In the worst case this explores O(n!) placement orders.
         for number_to_place in range(target_number, 0, -1):
             if is_number_used[number_to_place]:
                 continue
